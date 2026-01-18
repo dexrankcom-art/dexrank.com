@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 2 of 4 (Core Pages & Rankings)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-18 - Completed 02-02-PLAN.md
+Last activity: 2026-01-18 - Completed 02-03-PLAN.md
 
-Progress: [███████░░░] 36% (5/14 plans)
+Progress: [████████░░] 43% (6/14 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~17 minutes
-- Total execution time: ~85 minutes
+- Total plans completed: 6
+- Average duration: ~16 minutes
+- Total execution time: ~97 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 3/3 | ~64min | ~21min |
-| 2 | 2/4 | ~21min | ~11min |
+| 2 | 3/4 | ~33min | ~11min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (20min), 01-03 (14min), 02-01 (5min), 02-02 (16min)
-- Trend: Improving
+- Last 5 plans: 01-03 (14min), 02-01 (5min), 02-02 (16min), 02-03 (12min)
+- Trend: Stable at ~12min/plan for Phase 2
 
 *Updated after each plan completion*
 
@@ -57,6 +57,8 @@ Recent decisions affecting current work:
 | 02-02 | URL state library | nuqs with shallow:false | Triggers server re-render for SSR data fetching |
 | 02-02 | Search debouncing | useDeferredValue | React 18 native approach, no artificial delays |
 | 02-02 | Responsive columns | meta.hideOnMobile | Clean pattern for mobile column hiding |
+| 02-03 | Page generation | generateStaticParams | Pre-generate all 1559 pages at build for instant load |
+| 02-03 | ISR revalidation | 1 hour | Balance between fresh metrics and build performance |
 
 ### Pending Todos
 
@@ -85,11 +87,11 @@ All Phase 1 success criteria verified:
 |------|-------------|--------|
 | 02-01 | DexRank Scoring Algorithm | COMPLETE |
 | 02-02 | Homepage with Rankings Table | COMPLETE |
-| 02-03 | Protocol Detail Page | Pending |
+| 02-03 | Protocol Detail Page | COMPLETE |
 | 02-04 | Search & Navigation | Pending |
 
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 02-02-PLAN.md
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
