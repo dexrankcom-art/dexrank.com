@@ -1,0 +1,249 @@
+import { db } from '@/db';
+import {
+  protocols,
+  chains,
+  protocolChains,
+  protocolMetrics,
+} from '@/db/schema';
+import { eq, desc, asc, sql, ilike, and, inArray } from 'drizzle-orm';
+import type {
+  ProtocolWithMetrics,
+  ProtocolListItem,
+  ProtocolFilters,
+  ProtocolSortField,
+  SortOrder,
+} from './types';
+
+/**
+ * Get all protocols with latest metrics for listing
+ */
+export async function getProtocols(
+  filters: ProtocolFilters = {},
+  sortBy: ProtocolSortField = 'tvl',
+  sortOrder: SortOrder = 'desc'
+): Promise<ProtocolListItem[]> {
+  const { chain, category, search, limit = 100, offset = 0 } = filters;
+
+  // Build WHERE conditions
+  const conditions: ReturnType<typeof eq>[] = [];
+
+  if (category) {
+    conditions.push(eq(protocols.category, category));
+  }
+
+  if (search) {
+    conditions.push(ilike(protocols.name, `%${search}%`));
+  }
+
+  // If chain filter, get protocol IDs that have this chain
+  let protocolIdsWithChain: number[] | null = null;
+  if (chain) {
+    const chainRecord = await db
+      .select()
+      .from(chains)
+      .where(eq(chains.slug, chain.toLowerCase()))
+      .limit(1);
+
+    if (chainRecord.length > 0) {
+      const protocolChainRecords = await db
+        .select({ protocolId: protocolChains.protocolId })
+        .from(protocolChains)
+        .where(eq(protocolChains.chainId, chainRecord[0].id));
+
+      protocolIdsWithChain = protocolChainRecords.map((pc) => pc.protocolId);
+    } else {
+      return []; // Chain not found
+    }
+  }
+
+  if (protocolIdsWithChain && protocolIdsWithChain.length > 0) {
+    conditions.push(inArray(protocols.id, protocolIdsWithChain));
+  } else if (protocolIdsWithChain !== null) {
+    return []; // Chain filter specified but no matching protocols
+  }
+
+  // Subquery for latest metrics per protocol
+  const latestMetricsSubquery = db
+    .select({
+      protocolId: protocolMetrics.protocolId,
+      tvl: protocolMetrics.tvl,
+      tvlChange24h: protocolMetrics.tvlChange1d,
+      volume24h: protocolMetrics.volume24h,
+      volumeChange24h: protocolMetrics.volumeChange1d,
+    })
+    .from(protocolMetrics)
+    .where(
+      sql`${protocolMetrics.id} IN (
+        SELECT MAX(id) FROM protocol_metrics GROUP BY protocol_id
+      )`
+    )
+    .as('latest_metrics');
+
+  // Determine sort column
+  const getSortColumn = () => {
+    switch (sortBy) {
+      case 'name':
+        return protocols.name;
+      case 'tvl':
+        return latestMetricsSubquery.tvl;
+      case 'volume24h':
+        return latestMetricsSubquery.volume24h;
+      case 'tvlChange24h':
+        return latestMetricsSubquery.tvlChange24h;
+      default:
+        return latestMetricsSubquery.tvl;
+    }
+  };
+
+  const sortColumn = getSortColumn();
+
+  // Main query
+  const results = await db
+    .select({
+      id: protocols.id,
+      slug: protocols.slug,
+      name: protocols.name,
+      logo: protocols.logo,
+      category: protocols.category,
+      tvl: latestMetricsSubquery.tvl,
+      tvlChange24h: latestMetricsSubquery.tvlChange24h,
+      volume24h: latestMetricsSubquery.volume24h,
+      volumeChange24h: latestMetricsSubquery.volumeChange24h,
+    })
+    .from(protocols)
+    .leftJoin(latestMetricsSubquery, eq(protocols.id, latestMetricsSubquery.protocolId))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(sortOrder === 'desc' ? desc(sortColumn) : asc(sortColumn))
+    .limit(limit)
+    .offset(offset);
+
+  // Get chains for each protocol
+  const protocolIds = results.map((r) => r.id);
+
+  let chainMappings: { protocolId: number; chainName: string }[] = [];
+  if (protocolIds.length > 0) {
+    chainMappings = await db
+      .select({
+        protocolId: protocolChains.protocolId,
+        chainName: chains.name,
+      })
+      .from(protocolChains)
+      .innerJoin(chains, eq(protocolChains.chainId, chains.id))
+      .where(inArray(protocolChains.protocolId, protocolIds));
+  }
+
+  const chainsByProtocol = new Map<number, string[]>();
+  for (const mapping of chainMappings) {
+    const existing = chainsByProtocol.get(mapping.protocolId) ?? [];
+    existing.push(mapping.chainName);
+    chainsByProtocol.set(mapping.protocolId, existing);
+  }
+
+  return results.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    name: r.name,
+    logo: r.logo,
+    category: r.category,
+    chains: chainsByProtocol.get(r.id) ?? [],
+    tvl: r.tvl,
+    tvlChange24h: r.tvlChange24h,
+    volume24h: r.volume24h,
+    volumeChange24h: r.volumeChange24h,
+  }));
+}
+
+/**
+ * Get single protocol by slug with full details
+ */
+export async function getProtocolBySlug(slug: string): Promise<ProtocolWithMetrics | null> {
+  const [protocol] = await db
+    .select()
+    .from(protocols)
+    .where(eq(protocols.slug, slug))
+    .limit(1);
+
+  if (!protocol) return null;
+
+  // Get chains
+  const protocolChainRecords = await db
+    .select({ chain: chains })
+    .from(protocolChains)
+    .innerJoin(chains, eq(protocolChains.chainId, chains.id))
+    .where(eq(protocolChains.protocolId, protocol.id));
+
+  // Get latest metrics
+  const [latestMetrics] = await db
+    .select()
+    .from(protocolMetrics)
+    .where(eq(protocolMetrics.protocolId, protocol.id))
+    .orderBy(desc(protocolMetrics.fetchedAt))
+    .limit(1);
+
+  return {
+    ...protocol,
+    chains: protocolChainRecords.map((pc) => pc.chain),
+    latestMetrics: latestMetrics ?? null,
+  };
+}
+
+/**
+ * Get total protocol count (for pagination)
+ */
+export async function getProtocolCount(filters: ProtocolFilters = {}): Promise<number> {
+  const { category, search, chain } = filters;
+
+  const conditions: ReturnType<typeof eq>[] = [];
+
+  if (category) {
+    conditions.push(eq(protocols.category, category));
+  }
+
+  if (search) {
+    conditions.push(ilike(protocols.name, `%${search}%`));
+  }
+
+  // If chain filter, get protocol IDs that have this chain
+  if (chain) {
+    const chainRecord = await db
+      .select()
+      .from(chains)
+      .where(eq(chains.slug, chain.toLowerCase()))
+      .limit(1);
+
+    if (chainRecord.length > 0) {
+      const protocolChainRecords = await db
+        .select({ protocolId: protocolChains.protocolId })
+        .from(protocolChains)
+        .where(eq(protocolChains.chainId, chainRecord[0].id));
+
+      const protocolIds = protocolChainRecords.map((pc) => pc.protocolId);
+      if (protocolIds.length > 0) {
+        conditions.push(inArray(protocols.id, protocolIds));
+      } else {
+        return 0; // Chain has no protocols
+      }
+    } else {
+      return 0; // Chain not found
+    }
+  }
+
+  const [result] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(protocols)
+    .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+  return result?.count ?? 0;
+}
+
+/**
+ * Get unique categories
+ */
+export async function getCategories(): Promise<string[]> {
+  const results = await db
+    .selectDistinct({ category: protocols.category })
+    .from(protocols)
+    .where(sql`${protocols.category} IS NOT NULL`);
+
+  return results.map((r) => r.category!).sort();
+}
