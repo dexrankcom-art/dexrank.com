@@ -10,7 +10,7 @@ DexRank v1.0 delivers a database-first DEX comparison platform in four phases. P
 - Integer phases (1, 2, 3, 4): Planned milestone work
 - Decimal phases (e.g., 2.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Data Foundation** - Database schema, DefiLlama sync, data reliability
+- [x] **Phase 1: Data Foundation** - Database schema, DefiLlama sync, data reliability
 - [ ] **Phase 2: Core Pages & Rankings** - Homepage, ranking algorithm, basic DEX pages
 - [ ] **Phase 3: Content & Differentiation** - Editorial reviews, comparisons, chain pages, guides, methodology
 - [ ] **Phase 4: Production & Polish** - SEO optimization, Core Web Vitals, deployment readiness
@@ -30,9 +30,9 @@ DexRank v1.0 delivers a database-first DEX comparison platform in four phases. P
 **Plans**: 3 plans in 3 waves (sequential)
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffolding, Drizzle schema, Neon PostgreSQL, shadcn/ui setup
-- [ ] 01-02-PLAN.md — DefiLlama API client, sync service, Vercel cron endpoint
-- [ ] 01-03-PLAN.md — Data access layer, cache fallback, API endpoints
+- [x] 01-01-PLAN.md — Project scaffolding, Drizzle schema, Neon PostgreSQL, shadcn/ui setup
+- [x] 01-02-PLAN.md — DefiLlama API client, sync service, Vercel cron endpoint
+- [x] 01-03-PLAN.md — Data access layer, cache fallback, API endpoints
 
 ### Phase 2: Core Pages & Rankings
 **Goal**: Users can browse DEX rankings on the homepage, filter/sort/search, and view individual DEX pages with real-time metrics.
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Data Foundation | 0/3 | Planned | - |
+| 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
 | 2. Core Pages & Rankings | 0/3 | Not started | - |
 | 3. Content & Differentiation | 0/5 | Not started | - |
 | 4. Production & Polish | 0/3 | Not started | - |
