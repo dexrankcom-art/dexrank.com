@@ -44,12 +44,12 @@ Plans:
   3. User can sort by rank score, TVL, or volume
   4. User can search DEXs by name
   5. User can click a DEX to view its dedicated page with metrics and score breakdown
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves (sequential)
 
 Plans:
-- [ ] 02-01: Ranking algorithm implementation
-- [ ] 02-02: Homepage with rankings table
-- [ ] 02-03: DEX review page template
+- [ ] 02-01-PLAN.md — DexRank scoring algorithm (percentile normalization, weighted composite, score breakdown)
+- [ ] 02-02-PLAN.md — Homepage with rankings table (TanStack Table, nuqs URL state, filters/search)
+- [ ] 02-03-PLAN.md — DEX review pages with ISR (metrics grid, score breakdown, templated sections)
 
 ### Phase 3: Content & Differentiation
 **Goal**: Editorial content, comparison tools, chain pages, guides, and methodology transparency that differentiate DexRank from data-only competitors.
@@ -95,11 +95,52 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
-| 2. Core Pages & Rankings | 0/3 | Not started | - |
+| 2. Core Pages & Rankings | 0/3 | In Progress | - |
 | 3. Content & Differentiation | 0/5 | Not started | - |
 | 4. Production & Polish | 0/3 | Not started | - |
 
 ---
+
+## Future Vision: v2 and Beyond
+
+### v2 Milestone: Monetization & Data Depth
+
+After v1.0 launch, focus on sustainable revenue and richer data:
+- Affiliate link integration with click tracking
+- Historical TVL/volume charts (30/60/90 day trends)
+- Fee/revenue data per DEX
+- Category rankings (best for stablecoins, perps, memecoins)
+
+### v3 Milestone: Verified User Reviews (END GOAL)
+
+**DexRank becomes the "Trustpilot for DEXs"** — the trusted source for verified user reviews.
+
+**Why traditional reviews fail for DEXs:**
+- Uniswap has 1.1/5 on Trustpilot (97% one-star) despite billions in volume
+- 80%+ of negative reviews are phishing victims, scam token buyers, or user error
+- Reviews reflect crypto literacy gaps and scammer activity — not protocol quality
+
+**The DexRank solution:**
+1. User connects wallet to submit review
+2. System verifies on-chain transactions (proof of usage)
+3. Minimum usage threshold (3+ transactions, $100+ volume)
+4. Structured review template with weighted scores
+5. Sybil resistance via Human Passport
+6. Aggregated "DexRank User Score" from verified reviews only
+
+**Why this matters:**
+- Only platform where reviewers prove actual protocol usage
+- Scam victims can't bomb legitimate protocols
+- DEXs get actionable feedback from real users
+- Users can trust scores reflect actual quality
+
+*This is the long-term vision that makes DexRank the definitive DEX authority.*
+
+See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
+
+---
 *Roadmap created: 2026-01-17*
 *Phase 1 planned: 2026-01-17*
+*Phase 2 planned: 2026-01-18*
 *Milestone: v1.0*
+*Future vision added: 2026-01-18*
