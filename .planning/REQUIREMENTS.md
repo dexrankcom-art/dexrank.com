@@ -18,28 +18,28 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Ranking Algorithm
 
-- [ ] **RANK-01**: System calculates DexRank score based on weighted metrics (TVL, volume, security, liquidity, user growth, trust)
-- [ ] **RANK-02**: Ranking weights are configurable and documented
-- [ ] **RANK-03**: Rankings update automatically when data refreshes
-- [ ] **RANK-04**: User can view score breakdown for each DEX
+- [x] **RANK-01**: System calculates DexRank score based on weighted metrics (TVL, volume, security, liquidity, user growth, trust)
+- [x] **RANK-02**: Ranking weights are configurable and documented
+- [x] **RANK-03**: Rankings update automatically when data refreshes
+- [x] **RANK-04**: User can view score breakdown for each DEX
 
 ### Homepage & Rankings
 
-- [ ] **HOME-01**: Homepage displays top DEXs sorted by DexRank score
-- [ ] **HOME-02**: User can filter DEXs by blockchain network
-- [ ] **HOME-03**: User can filter DEXs by type (spot, perpetual, hybrid)
-- [ ] **HOME-04**: User can sort DEXs by rank score, TVL, or volume
-- [ ] **HOME-05**: User can search DEXs by name
-- [ ] **HOME-06**: Homepage displays real-time metrics (TVL, volume) per DEX
-- [ ] **HOME-07**: Homepage is mobile responsive
+- [x] **HOME-01**: Homepage displays top DEXs sorted by DexRank score
+- [x] **HOME-02**: User can filter DEXs by blockchain network
+- [x] **HOME-03**: User can filter DEXs by type (spot, perpetual, hybrid)
+- [x] **HOME-04**: User can sort DEXs by rank score, TVL, or volume
+- [x] **HOME-05**: User can search DEXs by name
+- [x] **HOME-06**: Homepage displays real-time metrics (TVL, volume) per DEX
+- [x] **HOME-07**: Homepage is mobile responsive
 
 ### DEX Review Pages
 
-- [ ] **REVIEW-01**: Each DEX has a dedicated review page at `/reviews/[dex-slug]`
-- [ ] **REVIEW-02**: Review pages display real-time metrics pulled from database
-- [ ] **REVIEW-03**: Review pages use consistent templated structure (overview, features, fees, security, pros/cons, verdict)
+- [x] **REVIEW-01**: Each DEX has a dedicated review page at `/reviews/[dex-slug]`
+- [x] **REVIEW-02**: Review pages display real-time metrics pulled from database
+- [x] **REVIEW-03**: Review pages use consistent templated structure (overview, features, fees, security, pros/cons, verdict)
 - [ ] **REVIEW-04**: Review pages include editorial "Editor's Take" section
-- [ ] **REVIEW-05**: Review pages display DexRank score with breakdown
+- [x] **REVIEW-05**: Review pages display DexRank score with breakdown
 - [ ] **REVIEW-06**: 30-40 DEX reviews completed at launch
 - [ ] **REVIEW-07**: Review pages have SEO meta tags (title, description, OG tags)
 - [ ] **REVIEW-08**: Review pages have schema markup (JSON-LD Review)
@@ -121,6 +121,51 @@ Deferred to future release. Tracked but not in current roadmap.
 - **FEAT-03**: API access for developers
 - **FEAT-04**: AI chatbot for DEX recommendations
 
+## v3 Vision: Verified User Reviews
+
+**End Goal:** DexRank becomes the "Trustpilot for DEXs" — the trusted source for verified user reviews where reviewers prove on-chain protocol usage.
+
+### Why Not Traditional Reviews?
+
+Traditional review platforms (Trustpilot, G2) fail catastrophically for DEXs:
+- **Uniswap:** 1.1/5 stars (97% one-star) — yet processes billions in volume
+- **PancakeSwap:** 1.5/5 stars — same pattern
+
+**Root cause:** 80%+ of negative reviews are NOT protocol failures:
+1. **Phishing victims** who used fake sites (unioswap.com, pancakeswapmeta.pro)
+2. **Scam token victims** who blame permissionless protocols for third-party rug pulls
+3. **User error** (gas fees, slippage, wrong network)
+
+These reviews reflect crypto literacy gaps and scammer activity — not protocol quality.
+
+### Verified User Review System
+
+- **VREV-01**: User connects wallet to submit review
+- **VREV-02**: System verifies on-chain transactions with the DEX (proof of usage)
+- **VREV-03**: Minimum usage threshold required (e.g., 3+ transactions, $100+ volume)
+- **VREV-04**: Structured review template (UX, speed, fees, liquidity, overall experience)
+- **VREV-05**: Review weighted by usage depth (heavy users have more weight)
+- **VREV-06**: Sybil resistance via Human Passport or similar identity verification
+- **VREV-07**: Reviews stored on-chain or IPFS for immutability
+- **VREV-08**: Aggregated "DexRank User Score" from verified reviews
+
+### Technical Approach
+
+- **Identity:** Human Passport (2M+ users, stamp-based Sybil resistance)
+- **On-chain verification:** Query transaction history via blockchain explorers/APIs
+- **Storage:** Hybrid — metadata on-chain (attestations), full review on IPFS
+- **Anti-gaming:** Usage thresholds, identity verification, anomaly detection
+
+### Why This Matters
+
+DexRank would be the ONLY platform where:
+1. Reviewers prove they actually used the protocol
+2. Scam victims can't bomb legitimate protocols
+3. DEXs get actionable feedback from real users
+4. Users can trust review scores reflect actual protocol quality
+
+*This is the long-term differentiation that makes DexRank the definitive DEX authority.*
+
 ## Out of Scope
 
 Explicitly excluded. Documented to prevent scope creep.
@@ -150,22 +195,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-04 | Phase 1 | Complete |
 | DATA-05 | Phase 1 | Complete |
 | DATA-06 | Phase 1 | Complete |
-| RANK-01 | Phase 2 | Pending |
-| RANK-02 | Phase 2 | Pending |
-| RANK-03 | Phase 2 | Pending |
-| RANK-04 | Phase 2 | Pending |
-| HOME-01 | Phase 2 | Pending |
-| HOME-02 | Phase 2 | Pending |
-| HOME-03 | Phase 2 | Pending |
-| HOME-04 | Phase 2 | Pending |
-| HOME-05 | Phase 2 | Pending |
-| HOME-06 | Phase 2 | Pending |
-| HOME-07 | Phase 2 | Pending |
-| REVIEW-01 | Phase 2 | Pending |
-| REVIEW-02 | Phase 2 | Pending |
-| REVIEW-03 | Phase 2 | Pending |
+| RANK-01 | Phase 2 | Complete |
+| RANK-02 | Phase 2 | Complete |
+| RANK-03 | Phase 2 | Complete |
+| RANK-04 | Phase 2 | Complete |
+| HOME-01 | Phase 2 | Complete |
+| HOME-02 | Phase 2 | Complete |
+| HOME-03 | Phase 2 | Complete |
+| HOME-04 | Phase 2 | Complete |
+| HOME-05 | Phase 2 | Complete |
+| HOME-06 | Phase 2 | Complete |
+| HOME-07 | Phase 2 | Complete |
+| REVIEW-01 | Phase 2 | Complete |
+| REVIEW-02 | Phase 2 | Complete |
+| REVIEW-03 | Phase 2 | Complete |
 | REVIEW-04 | Phase 3 | Pending |
-| REVIEW-05 | Phase 2 | Pending |
+| REVIEW-05 | Phase 2 | Complete |
 | REVIEW-06 | Phase 3 | Pending |
 | REVIEW-07 | Phase 3 | Pending |
 | REVIEW-08 | Phase 3 | Pending |
@@ -207,4 +252,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 1 completion*
+*Last updated: 2026-01-18 after Phase 2 completion*

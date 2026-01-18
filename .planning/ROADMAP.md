@@ -11,7 +11,7 @@ DexRank v1.0 delivers a database-first DEX comparison platform in four phases. P
 - Decimal phases (e.g., 2.1): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Data Foundation** - Database schema, DefiLlama sync, data reliability
-- [ ] **Phase 2: Core Pages & Rankings** - Homepage, ranking algorithm, basic DEX pages
+- [x] **Phase 2: Core Pages & Rankings** - Homepage, ranking algorithm, basic DEX pages
 - [ ] **Phase 3: Content & Differentiation** - Editorial reviews, comparisons, chain pages, guides, methodology
 - [ ] **Phase 4: Production & Polish** - SEO optimization, Core Web Vitals, deployment readiness
 
@@ -47,9 +47,9 @@ Plans:
 **Plans**: 3 plans in 3 waves (sequential)
 
 Plans:
-- [ ] 02-01-PLAN.md — DexRank scoring algorithm (percentile normalization, weighted composite, score breakdown)
-- [ ] 02-02-PLAN.md — Homepage with rankings table (TanStack Table, nuqs URL state, filters/search)
-- [ ] 02-03-PLAN.md — DEX review pages with ISR (metrics grid, score breakdown, templated sections)
+- [x] 02-01-PLAN.md — DexRank scoring algorithm (percentile normalization, weighted composite, score breakdown)
+- [x] 02-02-PLAN.md — Homepage with rankings table (TanStack Table, nuqs URL state, filters/search)
+- [x] 02-03-PLAN.md — DEX review pages with ISR (metrics grid, score breakdown, templated sections)
 
 ### Phase 3: Content & Differentiation
 **Goal**: Editorial content, comparison tools, chain pages, guides, and methodology transparency that differentiate DexRank from data-only competitors.
@@ -95,7 +95,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
-| 2. Core Pages & Rankings | 0/3 | In Progress | - |
+| 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
 | 3. Content & Differentiation | 0/5 | Not started | - |
 | 4. Production & Polish | 0/3 | Not started | - |
 
@@ -142,5 +142,6 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Roadmap created: 2026-01-17*
 *Phase 1 planned: 2026-01-17*
 *Phase 2 planned: 2026-01-18*
+*Phase 2 complete: 2026-01-18*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*
