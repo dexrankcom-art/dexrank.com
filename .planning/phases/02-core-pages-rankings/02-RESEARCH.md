@@ -1,0 +1,770 @@
+# Phase 02: Core Pages & Rankings - Research
+
+**Researched:** 2026-01-18
+**Domain:** DEX ranking algorithms, data tables, filter/search UX, review page structure
+**Confidence:** HIGH (verified with official docs and multiple sources)
+
+## Summary
+
+This phase requires building a ranking algorithm for ~1500 DEX protocols, displaying them in a filterable/sortable data table, and creating individual review pages. The research covers five key domains:
+
+1. **Ranking Algorithm**: Use percentile rank normalization for metrics with high variance (TVL ranges from $0 to billions). Calculate composite score using weighted average of normalized metrics. Market share approach (value / total) works well for financial data.
+
+2. **Data Tables**: TanStack Table v8 with shadcn/ui Table component is the standard stack. Table logic must be client-side ("use client") but data can be fetched server-side. shadcn/ui provides excellent starter patterns.
+
+3. **URL State**: nuqs library is the current SOTA for URL-synced filter/sort state in Next.js. Used by Vercel, Supabase, Sentry. Provides type-safe parsers and handles batched updates.
+
+4. **Search**: For ~1500 items, client-side filtering with `useDeferredValue` is ideal - no debounce delay needed, React handles prioritization. SQL ILIKE already implemented in data layer as fallback.
+
+5. **Review Pages**: Use `generateStaticParams` for SEO + ISR with `revalidate` for fresh data. Template structure: Overview, Features, Fees, Security, Pros/Cons, Verdict.
+
+**Primary recommendation:** Build ranking calculation in the data layer (server-side), use TanStack Table + nuqs for the interactive homepage, and leverage existing `getProtocols` queries with URL params driving filters.
+
+## Standard Stack
+
+The established libraries/tools for this domain:
+
+### Core
+| Library | Version | Purpose | Why Standard |
+|---------|---------|---------|--------------|
+| @tanstack/react-table | ^8.x | Data table logic | Industry standard, headless, fully typed |
+| nuqs | ^2.x | URL state management | Type-safe, Next.js native, used by Vercel/Supabase |
+| shadcn/ui Table | latest | Table UI components | Already installed, pairs with TanStack |
+
+### Supporting
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| lucide-react | ^0.562.0 | Icons | Already installed, use for sort arrows/filters |
+| zod | ^4.3.5 | Validation | Already installed, validate ranking weights |
+
+### Already Installed (No New Dependencies Needed For Core Features)
+The project already has: shadcn/ui components, Tailwind CSS, Drizzle ORM with server-side filtering/sorting implemented.
+
+**Installation (only new packages):**
+```bash
+npm install @tanstack/react-table nuqs
+```
+
+## Architecture Patterns
+
+### Recommended Project Structure
+```
+src/
+├── app/
+│   ├── page.tsx                    # Homepage (Server Component, fetches data)
+│   ├── reviews/
+│   │   └── [slug]/
+│   │       └── page.tsx            # DEX review page (SSG + ISR)
+│   └── providers.tsx               # NuqsAdapter wrapper
+├── components/
+│   ├── rankings/
+│   │   ├── columns.tsx             # Column definitions ("use client")
+│   │   ├── data-table.tsx          # DataTable component ("use client")
+│   │   ├── table-toolbar.tsx       # Filters, search ("use client")
+│   │   └── rank-badge.tsx          # Score display component
+│   └── reviews/
+│       ├── review-header.tsx       # DEX name, logo, score
+│       ├── metrics-grid.tsx        # TVL, volume cards
+│       └── review-sections.tsx     # Templated content sections
+├── lib/
+│   ├── ranking/
+│   │   ├── calculate-score.ts      # DexRank algorithm
+│   │   ├── normalize.ts            # Percentile/market-share normalization
+│   │   └── weights.ts              # Configurable weight constants
+│   └── data/
+│       └── protocols.ts            # Existing - add ranking queries
+└── types/
+    └── ranking.ts                  # Score breakdown types
+```
+
+### Pattern 1: Ranking Calculation (Server-Side)
+
+**What:** Calculate DexRank scores in the data layer, not client-side
+**When to use:** Always - scores should be computed with full dataset context
+
+```typescript
+// src/lib/ranking/calculate-score.ts
+// Source: Placeholder VC methodology + percentile normalization research
+
+export type RankingWeights = {
+  tvl: number;           // e.g., 0.30
+  volume: number;        // e.g., 0.25
+  growth: number;        // e.g., 0.20
+  liquidity: number;     // e.g., 0.15
+  trust: number;         // e.g., 0.10
+};
+
+export const DEFAULT_WEIGHTS: RankingWeights = {
+  tvl: 0.30,
+  volume: 0.25,
+  growth: 0.20,
+  liquidity: 0.15,
+  trust: 0.10,
+};
+
+export type ScoreBreakdown = {
+  overall: number;       // 0-100 composite score
+  components: {
+    tvl: number;         // 0-100 normalized
+    volume: number;
+    growth: number;
+    liquidity: number;
+    trust: number;
+  };
+  rank: number;          // Position 1-N
+  percentile: number;    // 0-100 (top X%)
+};
+
+/**
+ * Normalize using percentile rank (handles extreme variance in financial data)
+ * Better than min-max for TVL data where top protocols dominate
+ */
+export function percentileNormalize(values: number[], value: number): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const rank = sorted.findIndex(v => v >= value);
+  return (rank / sorted.length) * 100;
+}
+
+/**
+ * Market share approach (used by Placeholder VC)
+ * Value as percentage of total across all protocols
+ */
+export function marketShareNormalize(total: number, value: number): number {
+  if (total === 0) return 0;
+  return (value / total) * 100;
+}
+```
+
+### Pattern 2: TanStack Table + shadcn/ui
+
+**What:** Client-side table with server-fetched data
+**When to use:** Homepage rankings display
+
+```typescript
+// src/components/rankings/columns.tsx
+// Source: shadcn/ui Data Table documentation
+"use client"
+
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+export type RankedProtocol = {
+  rank: number;
+  slug: string;
+  name: string;
+  logo: string | null;
+  category: string | null;
+  chains: string[];
+  dexRankScore: number;
+  tvl: number | null;
+  volume24h: number | null;
+};
+
+export const columns: ColumnDef<RankedProtocol>[] = [
+  {
+    accessorKey: "rank",
+    header: "#",
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("rank")}</span>
+    ),
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        {row.original.logo && (
+          <img src={row.original.logo} alt="" className="h-6 w-6 rounded" />
+        )}
+        <span className="font-medium">{row.getValue("name")}</span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "dexRankScore",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        DexRank
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <span className="font-bold text-primary">
+        {row.getValue<number>("dexRankScore").toFixed(1)}
+      </span>
+    ),
+  },
+  // ... TVL, Volume columns with formatters
+];
+```
+
+### Pattern 3: URL State with nuqs
+
+**What:** Sync filter/sort state to URL for shareability and SSR
+**When to use:** Homepage filters, any stateful UI that should be shareable
+
+```typescript
+// src/app/providers.tsx
+// Source: nuqs documentation
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <NuqsAdapter>{children}</NuqsAdapter>
+}
+
+// src/components/rankings/table-toolbar.tsx
+"use client"
+import { parseAsString, parseAsStringEnum, useQueryStates } from 'nuqs'
+
+const sortOptions = ['rank', 'tvl', 'volume', 'name'] as const;
+type SortOption = typeof sortOptions[number];
+
+export function useTableFilters() {
+  return useQueryStates({
+    search: parseAsString.withDefault(''),
+    chain: parseAsString,
+    category: parseAsString,
+    sort: parseAsStringEnum(sortOptions).withDefault('rank'),
+    order: parseAsStringEnum(['asc', 'desc'] as const).withDefault('desc'),
+  }, {
+    shallow: false, // Trigger server re-render for SSR
+  });
+}
+```
+
+### Pattern 4: Mobile-Responsive Table
+
+**What:** Hide columns on mobile, show card view or expandable rows
+**When to use:** Tables that must work on mobile (HOME-07 requirement)
+
+```typescript
+// src/components/rankings/columns.tsx
+// Source: TanStack Table responsive discussions
+
+// Extend ColumnMeta for responsive behavior
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    hideOnMobile?: boolean;
+  }
+}
+
+// Column with mobile visibility
+{
+  accessorKey: "volume24h",
+  meta: { hideOnMobile: true },
+  header: "24h Volume",
+  // ...
+}
+
+// In data-table.tsx - apply responsive classes
+{table.getHeaderGroups().map((headerGroup) => (
+  <TableRow key={headerGroup.id}>
+    {headerGroup.headers.map((header) => (
+      <TableHead
+        key={header.id}
+        className={header.column.columnDef.meta?.hideOnMobile ? "hidden md:table-cell" : ""}
+      >
+        {/* ... */}
+      </TableHead>
+    ))}
+  </TableRow>
+))}
+```
+
+### Pattern 5: Review Page with ISR
+
+**What:** Static generation with incremental regeneration for fresh metrics
+**When to use:** Individual DEX review pages (REVIEW-01, REVIEW-02)
+
+```typescript
+// src/app/reviews/[slug]/page.tsx
+// Source: Next.js ISR documentation
+
+import { getProtocolBySlug, getAllProtocolSlugs } from '@/lib/data/protocols';
+
+// Revalidate every hour for fresh metrics
+export const revalidate = 3600;
+
+// Pre-generate pages for all known protocols
+export async function generateStaticParams() {
+  const slugs = await getAllProtocolSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
+// Allow new protocols to be generated on-demand
+export const dynamicParams = true;
+
+export default async function ReviewPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const protocol = await getProtocolBySlug(slug);
+
+  if (!protocol) {
+    notFound();
+  }
+
+  return (
+    <article>
+      <ReviewHeader protocol={protocol} />
+      <MetricsGrid metrics={protocol.latestMetrics} />
+      <ReviewSections protocol={protocol} />
+    </article>
+  );
+}
+```
+
+### Anti-Patterns to Avoid
+- **Client-side score calculation:** Don't calculate DexRank in the browser - metrics need full dataset context for percentile ranking
+- **useState for filters:** Don't use local state for filters - use nuqs for URL state (shareability, SSR, back button)
+- **Fetching in DataTable:** Don't fetch data inside the table component - pass data from Server Component
+- **Fixed debounce for search:** Don't use arbitrary debounce delays - use `useDeferredValue` for natural prioritization
+
+## Don't Hand-Roll
+
+Problems that look simple but have existing solutions:
+
+| Problem | Don't Build | Use Instead | Why |
+|---------|-------------|-------------|-----|
+| Table sorting/filtering logic | Custom sort functions | TanStack Table | Handles edge cases, accessibility, performance |
+| URL query state sync | Manual URLSearchParams | nuqs | Handles serialization, batching, history, types |
+| Multi-select filter dropdowns | Custom checkbox lists | shadcn/ui DropdownMenuCheckboxItem | Accessibility, keyboard nav, focus management |
+| Currency/number formatting | Manual toLocaleString | Intl.NumberFormat | Handles locales, edge cases correctly |
+| Table pagination state | Custom page tracking | TanStack Table getPaginationRowModel | Handles page bounds, row counts |
+
+**Key insight:** Data tables have dozens of edge cases (keyboard navigation, focus management, screen readers, empty states, loading states). TanStack Table + shadcn/ui handle all of these.
+
+## Common Pitfalls
+
+### Pitfall 1: Score Comparison Without Normalization
+**What goes wrong:** Comparing raw TVL ($10B) with raw volume ($50M) creates meaningless composite scores
+**Why it happens:** Different metrics have different scales and distributions
+**How to avoid:** Always normalize metrics to 0-100 scale before weighting
+**Warning signs:** One metric dominates the score regardless of weights
+
+### Pitfall 2: Client-Side Filtering for Large Datasets
+**What goes wrong:** Filtering 1500+ items on every keystroke causes jank
+**Why it happens:** React re-renders entire list on each filter change
+**How to avoid:** Use `useDeferredValue` to deprioritize list re-renders, or use server-side filtering (already implemented in `getProtocols`)
+**Warning signs:** Noticeable lag when typing in search box
+
+### Pitfall 3: Forgetting nuqs shallow: false
+**What goes wrong:** Filters update URL but Server Component doesn't re-fetch
+**Why it happens:** nuqs defaults to shallow: true (client-only updates)
+**How to avoid:** Set `shallow: false` when filters should trigger server re-render
+**Warning signs:** URL changes but data doesn't update until page refresh
+
+### Pitfall 4: Mobile Table Horizontal Scroll
+**What goes wrong:** Users can't see important columns without scrolling
+**Why it happens:** Default table behavior with many columns
+**How to avoid:** Use `hideOnMobile` meta + responsive classes to prioritize columns
+**Warning signs:** Horizontal scrollbar appears on mobile, key info off-screen
+
+### Pitfall 5: Missing generateStaticParams Return
+**What goes wrong:** Review pages return 404 or slow initial loads
+**Why it happens:** Dynamic routes without static generation
+**How to avoid:** Implement `generateStaticParams` to pre-build known pages
+**Warning signs:** First visit to review page is slow, Vercel shows dynamic function invocations
+
+### Pitfall 6: Stale ISR Data
+**What goes wrong:** Review pages show outdated metrics for hours
+**Why it happens:** revalidate set too high, or on-demand revalidation not triggered
+**How to avoid:** Use reasonable revalidate (3600s = 1 hour), trigger revalidatePath after sync
+**Warning signs:** Metrics don't match API data, user complaints about stale data
+
+## Code Examples
+
+Verified patterns from official sources:
+
+### Complete DataTable with Filtering
+```typescript
+// src/components/rankings/data-table.tsx
+// Source: shadcn/ui Data Table + TanStack Table v8 docs
+"use client"
+
+import * as React from "react"
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+}
+
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    state: {
+      sorting,
+      columnFilters,
+    },
+  })
+
+  return (
+    <div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Search DEXs..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )
+}
+```
+
+### nuqs Filter State Management
+```typescript
+// src/hooks/use-protocol-filters.ts
+// Source: nuqs documentation
+"use client"
+
+import { parseAsString, parseAsStringEnum, parseAsInteger, useQueryStates } from 'nuqs'
+
+export const sortFields = ['rank', 'tvl', 'volume24h', 'name'] as const;
+export type SortField = typeof sortFields[number];
+
+export function useProtocolFilters() {
+  const [filters, setFilters] = useQueryStates(
+    {
+      search: parseAsString.withDefault(''),
+      chain: parseAsString,
+      category: parseAsString,
+      sort: parseAsStringEnum(sortFields).withDefault('rank'),
+      order: parseAsStringEnum(['asc', 'desc'] as const).withDefault('asc'),
+      page: parseAsInteger.withDefault(1),
+    },
+    {
+      shallow: false, // Important: triggers server re-render
+    }
+  );
+
+  return {
+    filters,
+    setSearch: (search: string) => setFilters({ search, page: 1 }),
+    setChain: (chain: string | null) => setFilters({ chain, page: 1 }),
+    setCategory: (category: string | null) => setFilters({ category, page: 1 }),
+    setSort: (sort: SortField, order: 'asc' | 'desc') => setFilters({ sort, order }),
+    setPage: (page: number) => setFilters({ page }),
+  };
+}
+```
+
+### Percentile Rank Calculation
+```typescript
+// src/lib/ranking/normalize.ts
+// Source: Feature scaling research (Wikipedia, academic papers)
+
+/**
+ * Calculate percentile rank for a value within a sorted array
+ * Returns 0-100 where 100 = top value
+ *
+ * Better than min-max for financial data because:
+ * 1. Handles extreme outliers (top DEX has 100x more TVL than median)
+ * 2. Preserves meaningful ranking differences
+ * 3. Result is intuitive (percentile = "better than X% of peers")
+ */
+export function percentileRank(sortedValues: number[], value: number): number {
+  if (sortedValues.length === 0) return 0;
+  if (value <= sortedValues[0]) return 0;
+  if (value >= sortedValues[sortedValues.length - 1]) return 100;
+
+  // Count values less than current value
+  let count = 0;
+  for (const v of sortedValues) {
+    if (v < value) count++;
+    else break;
+  }
+
+  return (count / sortedValues.length) * 100;
+}
+
+/**
+ * Batch calculate percentile ranks for efficiency
+ * Pre-sorts once, then calculates all ranks
+ */
+export function batchPercentileRanks(
+  values: { id: number; value: number | null }[]
+): Map<number, number> {
+  const validValues = values
+    .filter((v): v is { id: number; value: number } => v.value !== null)
+    .sort((a, b) => a.value - b.value);
+
+  const ranks = new Map<number, number>();
+
+  validValues.forEach((item, index) => {
+    // Rank = position / total * 100
+    ranks.set(item.id, (index / validValues.length) * 100);
+  });
+
+  // Null values get 0 percentile
+  values
+    .filter((v) => v.value === null)
+    .forEach((v) => ranks.set(v.id, 0));
+
+  return ranks;
+}
+```
+
+### Review Page Template Structure
+```typescript
+// src/app/reviews/[slug]/page.tsx
+// Source: DEX review page research (Cryptonews, CoinBureau patterns)
+
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { getProtocolBySlug, getProtocolScoreBreakdown } from '@/lib/data/protocols';
+
+export const revalidate = 3600; // ISR: revalidate hourly
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const protocol = await getProtocolBySlug(slug);
+
+  if (!protocol) return { title: 'Not Found' };
+
+  return {
+    title: `${protocol.name} Review - DexRank`,
+    description: `${protocol.name} DEX review with DexRank score, TVL, volume, fees, and security analysis.`,
+  };
+}
+
+export default async function ReviewPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const protocol = await getProtocolBySlug(slug);
+
+  if (!protocol) {
+    notFound();
+  }
+
+  const scoreBreakdown = await getProtocolScoreBreakdown(protocol.id);
+
+  return (
+    <article className="container mx-auto py-8">
+      {/* Header: Name, Logo, Overall Score */}
+      <ReviewHeader protocol={protocol} score={scoreBreakdown.overall} />
+
+      {/* Real-time metrics grid */}
+      <MetricsGrid metrics={protocol.latestMetrics} />
+
+      {/* Score breakdown visualization */}
+      <ScoreBreakdown breakdown={scoreBreakdown} />
+
+      {/* Templated sections (REVIEW-03) */}
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>{protocol.description || 'No description available.'}</p>
+      </section>
+
+      <section id="features">
+        <h2>Features</h2>
+        {/* Chain support, trading pairs, etc. */}
+      </section>
+
+      <section id="fees">
+        <h2>Fees</h2>
+        {/* Fee structure if available */}
+      </section>
+
+      <section id="security">
+        <h2>Security</h2>
+        {/* Audit info, smart contract links */}
+      </section>
+
+      <section id="pros-cons">
+        <h2>Pros & Cons</h2>
+        {/* Generated from score breakdown */}
+      </section>
+
+      <section id="verdict">
+        <h2>Verdict</h2>
+        {/* Summary based on DexRank score */}
+      </section>
+    </article>
+  );
+}
+```
+
+## State of the Art
+
+| Old Approach | Current Approach | When Changed | Impact |
+|--------------|------------------|--------------|--------|
+| React Table v7 | TanStack Table v8 | 2022 | Headless, smaller bundle, better types |
+| useState + useEffect for URL | nuqs | 2023-2024 | Type-safe, batched updates, framework support |
+| Fixed debounce timers | useDeferredValue | React 18 (2022) | Adaptive, no artificial delays |
+| getStaticPaths | generateStaticParams | Next.js 13 (2022) | App Router native, simpler API |
+| Client-side global state | URL params + Server Components | Next.js 13+ | Better SSR, shareability, SEO |
+
+**Deprecated/outdated:**
+- **react-table v7:** Replace with @tanstack/react-table v8
+- **next-usequerystate:** Renamed to nuqs (same maintainer)
+- **Custom debounce hooks for search:** Use useDeferredValue instead
+
+## Open Questions
+
+Things that couldn't be fully resolved:
+
+1. **Security/Trust Metric Data Source**
+   - What we know: RANK-01 mentions "security" and "trust" as scoring components
+   - What's unclear: No security audit data exists in current schema; DefiLlama doesn't provide this
+   - Recommendation: Either (a) source from external audit aggregator, (b) use proxy metrics (age, TVL stability), or (c) defer security score to future phase
+
+2. **User Growth Metric**
+   - What we know: RANK-01 mentions "user growth" as a component
+   - What's unclear: DefiLlama doesn't provide user/wallet count data
+   - Recommendation: Either (a) integrate with DappRadar API for UAW data, (b) use volume growth as proxy, or (c) mark as "coming soon"
+
+3. **Review Page Static Content**
+   - What we know: REVIEW-03 requires templated structure with overview, features, fees, security, pros/cons, verdict
+   - What's unclear: How much content is dynamic vs manually written?
+   - Recommendation: Start with 100% dynamic (generated from metrics/scores), plan for CMS integration later
+
+## Sources
+
+### Primary (HIGH confidence)
+- [shadcn/ui Data Table](https://ui.shadcn.com/docs/components/data-table) - Complete table implementation guide
+- [nuqs Documentation](https://nuqs.dev) - URL state management API
+- [Next.js ISR Guide](https://nextjs.org/docs/app/guides/incremental-static-regeneration) - generateStaticParams patterns
+- [React useDeferredValue](https://react.dev/reference/react/useDeferredValue) - Search optimization
+
+### Secondary (MEDIUM confidence)
+- [Placeholder VC Combined Metrics](https://www.placeholder.vc/blog/2025/4/16/combined-metrics-for-tracking-smart-contract-networks) - Market share normalization methodology
+- [TanStack Table Responsive Discussion](https://github.com/TanStack/table/discussions/3259) - Mobile column collapse patterns
+- [nuqs React Advanced 2025](https://www.infoq.com/news/2025/12/nuqs-react-advanced/) - Production validation (Vercel, Supabase, Sentry)
+
+### Tertiary (LOW confidence - patterns only)
+- [DEX Review Templates](https://cryptonews.com/reviews/hyperliquid-dex-review/) - Section structure examples
+- [Feature Scaling Wikipedia](https://en.wikipedia.org/wiki/Feature_scaling) - Normalization theory
+
+## Metadata
+
+**Confidence breakdown:**
+- Standard stack: HIGH - TanStack Table + shadcn/ui verified in official docs
+- URL state (nuqs): HIGH - Production validated, official Next.js support
+- Ranking algorithm: MEDIUM - Based on financial industry patterns, no DeFi-specific standard
+- Review structure: MEDIUM - Based on competitor analysis, not spec-defined
+
+**Research date:** 2026-01-18
+**Valid until:** 2026-02-18 (30 days - stable ecosystem)
