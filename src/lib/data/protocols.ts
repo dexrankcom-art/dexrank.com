@@ -251,6 +251,18 @@ export async function getCategories(): Promise<string[]> {
 }
 
 /**
+ * Get unique chain names
+ */
+export async function getChainNames(): Promise<string[]> {
+  const results = await db
+    .selectDistinct({ name: chains.name })
+    .from(chains)
+    .orderBy(chains.name);
+
+  return results.map((r) => r.name);
+}
+
+/**
  * Get protocols with DexRank scores calculated
  * Wrapper around getProtocols that adds ranking
  */
