@@ -44,5 +44,26 @@ export type ProtocolFilters = {
 };
 
 // Sort options
-export type ProtocolSortField = 'name' | 'tvl' | 'volume24h' | 'tvlChange24h';
+export type ProtocolSortField = 'name' | 'tvl' | 'volume24h' | 'tvlChange24h' | 'dexRankScore';
 export type SortOrder = 'asc' | 'desc';
+
+// Score breakdown for transparency (RANK-04)
+export type ScoreBreakdown = {
+  overall: number;       // 0-100 composite score
+  rank: number;          // Position 1-N among filtered results
+  percentile: number;    // Top X% (e.g., 95 = top 5%)
+  components: {
+    tvl: number;         // 0-100 normalized TVL score
+    volume: number | null; // 0-100 normalized volume score (null if unavailable)
+  };
+  weights: {
+    tvl: number;         // Applied weight (may be redistributed)
+    volume: number;      // Applied weight (0 if volume unavailable)
+  };
+};
+
+// Protocol with ranking data
+export type RankedProtocol = ProtocolListItem & {
+  dexRankScore: number;
+  scoreBreakdown: ScoreBreakdown;
+};
