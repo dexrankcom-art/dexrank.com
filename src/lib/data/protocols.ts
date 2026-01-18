@@ -12,7 +12,9 @@ import type {
   ProtocolFilters,
   ProtocolSortField,
   SortOrder,
+  RankedProtocol,
 } from './types';
+import { calculateDexRankScores } from '@/lib/ranking';
 
 /**
  * Get all protocols with latest metrics for listing
@@ -246,4 +248,49 @@ export async function getCategories(): Promise<string[]> {
     .where(sql`${protocols.category} IS NOT NULL`);
 
   return results.map((r) => r.category!).sort();
+}
+
+/**
+ * Get protocols with DexRank scores calculated
+ * Wrapper around getProtocols that adds ranking
+ */
+export async function getProtocolsWithRanking(
+  filters: ProtocolFilters = {},
+  sortBy: ProtocolSortField | 'dexRankScore' = 'dexRankScore',
+  sortOrder: SortOrder = 'desc'
+): Promise<RankedProtocol[]> {
+  // Get ALL protocols for ranking context (scores need full dataset)
+  // Then filter after ranking
+  const allProtocols = await getProtocols(
+    { ...filters, limit: 10000, offset: 0 }, // Get all matching filters except pagination
+    'tvl', // Default sort, will re-sort by score
+    'desc'
+  );
+
+  // Calculate scores
+  const rankedProtocols = calculateDexRankScores(allProtocols);
+
+  // Apply sort preference
+  if (sortBy === 'dexRankScore') {
+    // Already sorted by score from calculateDexRankScores
+    if (sortOrder === 'asc') {
+      rankedProtocols.reverse();
+    }
+  } else if (sortBy === 'tvl') {
+    rankedProtocols.sort((a, b) =>
+      sortOrder === 'desc' ? (b.tvl ?? 0) - (a.tvl ?? 0) : (a.tvl ?? 0) - (b.tvl ?? 0)
+    );
+  } else if (sortBy === 'volume24h') {
+    rankedProtocols.sort((a, b) =>
+      sortOrder === 'desc' ? (b.volume24h ?? 0) - (a.volume24h ?? 0) : (a.volume24h ?? 0) - (b.volume24h ?? 0)
+    );
+  } else if (sortBy === 'name') {
+    rankedProtocols.sort((a, b) =>
+      sortOrder === 'desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name)
+    );
+  }
+
+  // Apply pagination from original filters
+  const { limit = 100, offset = 0 } = filters;
+  return rankedProtocols.slice(offset, offset + limit);
 }
