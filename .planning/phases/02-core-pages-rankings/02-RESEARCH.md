@@ -722,6 +722,291 @@ export default async function ReviewPage({
 - **next-usequerystate:** Renamed to nuqs (same maintainer)
 - **Custom debounce hooks for search:** Use useDeferredValue instead
 
+---
+
+## Ranking Algorithm Deep-Dive
+
+**Research Date:** 2026-01-18
+**Confidence:** MEDIUM-HIGH (verified with multiple industry sources)
+
+### Normalization Techniques Comparison
+
+| Technique | Best For | Pros | Cons | DexRank Recommendation |
+|-----------|----------|------|------|------------------------|
+| **Percentile Rank** | High-variance data (TVL) | Eliminates outliers automatically, intuitive interpretation | Loses magnitude information | **USE for TVL, Volume** |
+| **Min-Max** | Bounded data | Simple, preserves relative distances | Sensitive to outliers, shifts when new data added | Avoid for financial metrics |
+| **Z-Score** | Normally distributed data | Good for mixed-scale data | Less intuitive, can produce negative values | Consider for growth rates |
+| **Log Transform** | Exponential distributions | Compresses extreme values | Zero/negative values problematic | Pre-process before percentile |
+| **Rank Transform** | Any distribution | Most robust to outliers | Only preserves order, not magnitude | Alternative to percentile |
+
+**Source:** [COINr Normalisation Guide](https://bluefoxr.github.io/COINrDoc/normalisation.html), [OpenSearch Rank Normalization](https://opensearch.org/blog/How-does-the-rank-normalization-work-in-hybrid-search/)
+
+### Industry Weight Distribution Analysis
+
+#### DefiLlama Approach
+- **Does NOT use weighted composite scores** - pure TVL ranking
+- Protocols ranked by single metric (Total Value Locked)
+- No multi-factor weighting system
+- Source: [DefiLlama Methodology](https://docs.llama.fi/)
+
+#### CoinGecko Trust Score (Exchanges)
+Weighted 0-10 scale with these components:
+| Component | Weight | What It Measures |
+|-----------|--------|------------------|
+| Liquidity | 4/10 (40%) | Order book depth, spread, trading activity |
+| Cybersecurity | 2/10 (20%) | Hacken security audit score |
+| Scale | 1/10 (10%) | Volume and order book depth analysis |
+| Past Incidents | 1/10 (10%) | Regulatory issues, hacks, disputes |
+| Proof of Assets | 1/10 (10%) | Reserve disclosure, audits |
+| Team Presence | 1/10 (10%) | Operational transparency |
+
+**Key insight:** CoinGecko does NOT apply Trust Score to DEXs - "For decentralized exchanges, there's no Trust Score; instead, rankings rely on trading volume."
+Source: [CoinGecko Trust Score Methodology](https://support.coingecko.com/hc/en-us/articles/36442561461657-Trust-Score-Methodology)
+
+#### ConsenSys DeFi Score
+| Category | Weight | Sub-components |
+|----------|--------|----------------|
+| Smart Contract Security | 45% | Time on mainnet, audits, bug bounty, vulnerabilities |
+| Financial Risk (Collateral) | 20% | CVaR model, utilization rates |
+| Financial Risk (Liquidity) | 10% | Available liquidity |
+| Centralization (Admin) | 12.5% | Timelocks, multi-sig controls |
+| Centralization (Oracles) | 12.5% | Oracle decentralization |
+
+**Normalization used:** Min-max for Utilization Index and Liquidity Index
+Source: [ConsenSys DeFi Score GitHub](https://github.com/Consensys/defi-score)
+
+### Recommended DexRank Weight Distribution
+
+Based on industry analysis and available data:
+
+```typescript
+// Phase 1 Weights (TVL + Volume only - what we have)
+export const PHASE1_WEIGHTS = {
+  tvl: 0.60,           // Primary metric - available
+  volume24h: 0.40,     // Secondary metric - partially available
+};
+
+// Phase 2 Weights (adding growth metrics)
+export const PHASE2_WEIGHTS = {
+  tvl: 0.40,           // Still important but reduced
+  volume24h: 0.25,     // Trading activity
+  tvlGrowth7d: 0.20,   // Growth trajectory (calculate from historical)
+  volumeGrowth7d: 0.15,// Volume momentum
+};
+
+// Future Weights (if trust data becomes available)
+export const FUTURE_WEIGHTS = {
+  tvl: 0.30,
+  volume24h: 0.20,
+  growth: 0.20,
+  security: 0.15,      // From DeFiSafety if API available
+  liquidity: 0.15,     // Derived from TVL/volume ratio
+};
+```
+
+**Rationale:**
+1. TVL is the most reliable metric we have (100% coverage)
+2. Volume is important but only ~3% of protocols have it
+3. Growth can be derived from historical TVL (we store daily snapshots)
+4. Security/trust requires external data sources (see Trust Score section)
+
+### Missing Data Strategy
+
+**Current state:** 97% of protocols have null volume data.
+
+| Strategy | When to Use | Implementation |
+|----------|-------------|----------------|
+| **Neutral Score (50)** | Metric unavailable, shouldn't penalize | `normalizedValue = metricAvailable ? percentile : 50` |
+| **Zero Score (0)** | Missing = bad signal (e.g., no audit) | `normalizedValue = metricAvailable ? percentile : 0` |
+| **Exclude from calculation** | Too much missing data | Redistribute weights to available metrics |
+| **Cross-sectional mean** | Sparse but pattern exists | `value = mean(availableValues)` |
+
+**DexRank recommendation:** Use **weight redistribution** for Phase 1:
+
+```typescript
+export function calculateScore(
+  protocol: Protocol,
+  allProtocols: Protocol[]
+): number {
+  const metrics = {
+    tvl: { value: protocol.tvl, weight: 0.60, available: protocol.tvl !== null },
+    volume: { value: protocol.volume24h, weight: 0.40, available: protocol.volume24h !== null },
+  };
+
+  // Redistribute weights to available metrics
+  const availableMetrics = Object.values(metrics).filter(m => m.available);
+  const totalAvailableWeight = availableMetrics.reduce((sum, m) => sum + m.weight, 0);
+
+  let score = 0;
+  for (const metric of availableMetrics) {
+    const normalizedWeight = metric.weight / totalAvailableWeight;
+    const percentile = calculatePercentile(metric.value, allProtocols, metric.key);
+    score += percentile * normalizedWeight;
+  }
+
+  return score;
+}
+```
+
+**Research finding:** Financial research shows cross-sectional mean imputation performs well for predictor data because "missingness tends to occur in blocks organized by the underlying data source." Our volume data fits this pattern.
+Source: [Missing Values in Machine Learning Portfolios](https://www.sciencedirect.com/science/article/abs/pii/S0304405X24000382)
+
+### Composite Score Formula
+
+**Recommended approach:** Weighted Additive (not multiplicative)
+
+| Approach | Formula | Use When |
+|----------|---------|----------|
+| **Additive (WSM)** | `score = sum(weight_i * normalized_i)` | Metrics can compensate each other |
+| **Multiplicative (WPM)** | `score = product(normalized_i ^ weight_i)` | All metrics must be good |
+
+**Why additive for DexRank:**
+1. A DEX with high TVL but lower volume is still valuable
+2. Multiplicative would unfairly penalize protocols missing metrics
+3. Industry standard (CoinGecko, ConsenSys use additive)
+
+Source: [Add or Multiply? Tutorial on Multi-Criteria Ranking](https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124)
+
+```typescript
+// Final formula for DexRank Score
+export function calculateDexRankScore(
+  tvlPercentile: number,      // 0-100
+  volumePercentile: number,   // 0-100 or null
+  weights: RankingWeights
+): number {
+  if (volumePercentile === null) {
+    // TVL-only score when volume unavailable
+    return tvlPercentile;
+  }
+
+  // Weighted additive composite
+  const totalWeight = weights.tvl + weights.volume;
+  return (
+    (tvlPercentile * weights.tvl + volumePercentile * weights.volume) /
+    totalWeight
+  );
+}
+```
+
+---
+
+## Trust Score Integration Research
+
+**Research Date:** 2026-01-18
+**Confidence:** HIGH (verified with official API documentation)
+
+### Trustpilot API Assessment
+
+#### API Availability: CONFIRMED
+Trustpilot has a public API with these relevant endpoints:
+- `GET /v1/business-units/find?name={domain}` - Find business by domain
+- `GET /v1/business-units/{id}` - Get business details including trust score
+- `GET /v1/business-units/{id}/reviews` - Get reviews (up to 100,000)
+
+**Authentication:** API Key only (no OAuth required for public endpoints)
+**Rate Limits:** Not publicly documented, "rate limiting best practices" guide exists
+
+Source: [Trustpilot Developers](https://developers.trustpilot.com/), [Business Units API (Public)](https://developers.trustpilot.com/business-units-api-(public)/)
+
+#### Pricing: PROBLEMATIC
+- **Free plan:** Basic review collection only, NO API access
+- **Paid plans start at $259/month** (Plus tier)
+- **API access is an add-on** to paid plans, additional cost
+- **Annual commitment required** - no month-to-month
+- **Per-domain pricing** - each website needs separate plan
+
+Source: [Trustpilot Pricing](https://business.trustpilot.com/pricing), [Trustpilot Pricing Analysis](https://wiserreview.com/blog/trustpilot-pricing/)
+
+#### DEX Coverage on Trustpilot: VERIFIED BUT PROBLEMATIC
+
+| DEX | Trustpilot URL | Score | Reviews | Status |
+|-----|----------------|-------|---------|--------|
+| Uniswap | trustpilot.com/review/app.uniswap.org | 1.1/5 | 883 | Claimed, 97% 1-star |
+| PancakeSwap | trustpilot.com/review/pancakeswap.finance | 1.5/5 | 175 | Unclaimed, 77% 1-star |
+| dYdX | Not found | N/A | N/A | No page exists |
+| GMX | Not found | N/A | N/A | No page exists |
+
+**Critical finding:** DEX Trustpilot reviews are overwhelmingly negative (scam complaints, phishing victims, failed transactions). These scores do NOT reflect actual protocol quality - they reflect user confusion between legitimate DEXs and scam sites impersonating them.
+
+**Recommendation:** DO NOT USE Trustpilot for DEX trust scores. The data is:
+1. Incomplete (many DEXs have no page)
+2. Misleading (scam victims rate legitimate sites)
+3. Expensive to access via API
+4. Not claimed/managed by actual protocols
+
+### Alternative Trust/Reputation Sources
+
+#### DeFiSafety - RECOMMENDED
+- **Coverage:** 340+ protocols across 24 blockchains
+- **Score format:** 0-100% based on code quality, documentation, testing, security, admin controls
+- **API availability:** NO public API - requires sign-in, custom research reports available
+- **Data access:** Would require scraping or partnership arrangement
+- **Quality:** High - independent security-focused reviews
+
+Source: [DeFiSafety](https://www.defisafety.com/)
+
+#### CoinGecko Trust Score - NOT APPLICABLE
+- Only applies to centralized exchanges, NOT DEXs
+- DEXs ranked by volume only on CoinGecko
+
+Source: [CoinGecko Trust Score](https://support.coingecko.com/hc/en-us/sections/8168778514713-Trust-Score)
+
+#### Crypto Sentiment APIs
+
+| Provider | What It Offers | Pricing | DexRank Fit |
+|----------|----------------|---------|-------------|
+| Santiment | Social + on-chain analytics | Paid tiers | MEDIUM - more for trading signals |
+| StockGeist | Real-time social sentiment | REST API available | LOW - 400 coins only |
+| Token Metrics | AI-driven ratings | Paid | LOW - token focus, not protocols |
+| BittsAnalytics | Social sentiment indices | API available | LOW - token focus |
+
+Source: [Top Crypto APIs 2025](https://www.tokenmetrics.com/blog/top-5-cryptocurrency-apis-2025)
+
+#### On-Chain Metrics as Trust Proxy
+
+Since external trust APIs are either unavailable or inappropriate for DEXs, consider deriving trust signals from on-chain/available data:
+
+| Proxy Metric | What It Indicates | How to Calculate |
+|--------------|-------------------|------------------|
+| **Protocol Age** | Battle-tested, survived market cycles | `daysSince(launchDate)` |
+| **TVL Stability** | Not a rug-pull risk | `stddev(tvl_30d) / mean(tvl_30d)` |
+| **Chain Count** | Ecosystem trust (multiple chain deployments) | `count(chains)` |
+| **Volume/TVL Ratio** | Actual usage vs locked value | `volume24h / tvl` |
+
+### Recommended Trust Score Approach for DexRank
+
+**Phase 1 (MVP):** Do not include explicit trust score
+- Focus on TVL and Volume ranking
+- These metrics implicitly capture some trust (users don't lock funds in untrusted protocols)
+
+**Phase 2 (Enhancement):** Derived trust proxy
+```typescript
+export function calculateTrustProxy(protocol: Protocol): number {
+  const scores = {
+    // Age score: 0-30 points (max at 2+ years)
+    age: Math.min(30, protocol.ageInDays / 730 * 30),
+
+    // TVL stability: 0-30 points (lower volatility = higher score)
+    stability: Math.max(0, 30 - (protocol.tvlVolatility30d * 100)),
+
+    // Multi-chain: 0-20 points (1 chain = 5, 4+ chains = 20)
+    multiChain: Math.min(20, protocol.chainCount * 5),
+
+    // Has volume data: 0-20 points (indicates real trading activity)
+    hasVolume: protocol.volume24h !== null ? 20 : 0,
+  };
+
+  return scores.age + scores.stability + scores.multiChain + scores.hasVolume;
+}
+```
+
+**Phase 3 (Future):** External data integration
+- Partner with DeFiSafety for security scores (requires business relationship)
+- Integrate audit data if available from DefiLlama or other sources
+- Consider L2Beat for Ethereum L2 risk assessments
+
+---
+
 ## Open Questions
 
 Things that couldn't be fully resolved:
@@ -729,7 +1014,7 @@ Things that couldn't be fully resolved:
 1. **Security/Trust Metric Data Source**
    - What we know: RANK-01 mentions "security" and "trust" as scoring components
    - What's unclear: No security audit data exists in current schema; DefiLlama doesn't provide this
-   - Recommendation: Either (a) source from external audit aggregator, (b) use proxy metrics (age, TVL stability), or (c) defer security score to future phase
+   - Recommendation: Use derived trust proxy (age, stability, chain count) for Phase 1; explore DeFiSafety partnership for Phase 2
 
 2. **User Growth Metric**
    - What we know: RANK-01 mentions "user growth" as a component
@@ -741,6 +1026,11 @@ Things that couldn't be fully resolved:
    - What's unclear: How much content is dynamic vs manually written?
    - Recommendation: Start with 100% dynamic (generated from metrics/scores), plan for CMS integration later
 
+4. **Trustpilot API Access Without Business Account**
+   - What we know: Public API endpoints exist, require API key
+   - What's unclear: Can API key be obtained without paid business account?
+   - Recommendation: Do not pursue Trustpilot - DEX data quality is poor regardless of API access
+
 ## Sources
 
 ### Primary (HIGH confidence)
@@ -748,22 +1038,36 @@ Things that couldn't be fully resolved:
 - [nuqs Documentation](https://nuqs.dev) - URL state management API
 - [Next.js ISR Guide](https://nextjs.org/docs/app/guides/incremental-static-regeneration) - generateStaticParams patterns
 - [React useDeferredValue](https://react.dev/reference/react/useDeferredValue) - Search optimization
+- [Trustpilot Developers Portal](https://developers.trustpilot.com/) - API documentation
+- [Trustpilot Business Units API](https://developers.trustpilot.com/business-units-api-(public)/) - Public endpoints
+- [CoinGecko Trust Score Methodology](https://support.coingecko.com/hc/en-us/articles/36442561461657-Trust-Score-Methodology) - Weight distribution
+- [ConsenSys DeFi Score](https://github.com/Consensys/defi-score) - Scoring framework
 
 ### Secondary (MEDIUM confidence)
 - [Placeholder VC Combined Metrics](https://www.placeholder.vc/blog/2025/4/16/combined-metrics-for-tracking-smart-contract-networks) - Market share normalization methodology
 - [TanStack Table Responsive Discussion](https://github.com/TanStack/table/discussions/3259) - Mobile column collapse patterns
 - [nuqs React Advanced 2025](https://www.infoq.com/news/2025/12/nuqs-react-advanced/) - Production validation (Vercel, Supabase, Sentry)
+- [DefiLlama Methodology](https://docs.llama.fi/) - TVL ranking approach
+- [DeFiSafety](https://www.defisafety.com/) - Protocol security reviews
+- [COINr Normalisation Guide](https://bluefoxr.github.io/COINrDoc/normalisation.html) - Composite indicator methods
+- [Add or Multiply Tutorial](https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124) - Multi-criteria ranking
 
 ### Tertiary (LOW confidence - patterns only)
 - [DEX Review Templates](https://cryptonews.com/reviews/hyperliquid-dex-review/) - Section structure examples
 - [Feature Scaling Wikipedia](https://en.wikipedia.org/wiki/Feature_scaling) - Normalization theory
+- [Trustpilot Uniswap Reviews](https://www.trustpilot.com/review/app.uniswap.org) - DEX coverage verification
+- [Trustpilot PancakeSwap Reviews](https://www.trustpilot.com/review/pancakeswap.finance) - DEX coverage verification
 
 ## Metadata
 
 **Confidence breakdown:**
 - Standard stack: HIGH - TanStack Table + shadcn/ui verified in official docs
 - URL state (nuqs): HIGH - Production validated, official Next.js support
-- Ranking algorithm: MEDIUM - Based on financial industry patterns, no DeFi-specific standard
+- Ranking algorithm: MEDIUM-HIGH - Based on CoinGecko, ConsenSys, academic research
+- Normalization: HIGH - COINr guide + OpenSearch documentation
+- Missing data handling: MEDIUM - Financial research papers, pattern fits our data
+- Trustpilot API: HIGH - Verified in official docs, DEX coverage verified manually
+- Trust alternatives: MEDIUM - DeFiSafety exists but no public API confirmed
 - Review structure: MEDIUM - Based on competitor analysis, not spec-defined
 
 **Research date:** 2026-01-18
