@@ -13,6 +13,7 @@ import type {
   ProtocolSortField,
   SortOrder,
   RankedProtocol,
+  ScoreBreakdown,
 } from './types';
 import { calculateDexRankScores } from '@/lib/ranking';
 
@@ -305,4 +306,60 @@ export async function getProtocolsWithRanking(
   // Apply pagination from original filters
   const { limit = 100, offset = 0 } = filters;
   return rankedProtocols.slice(offset, offset + limit);
+}
+
+/**
+ * Get all protocol slugs for static generation
+ */
+export async function getAllProtocolSlugs(): Promise<string[]> {
+  const results = await db
+    .select({ slug: protocols.slug })
+    .from(protocols);
+
+  return results.map((r) => r.slug);
+}
+
+/**
+ * Get single protocol with ranking score
+ * Calculates ranking in context of all protocols for accurate percentile
+ */
+export async function getProtocolBySlugWithRanking(
+  slug: string
+): Promise<(ProtocolWithMetrics & { scoreBreakdown: ScoreBreakdown; rank: number; totalProtocols: number }) | null> {
+  // Get the protocol
+  const protocol = await getProtocolBySlug(slug);
+  if (!protocol) return null;
+
+  // Get all protocols to calculate ranking context
+  const allProtocols = await getProtocols({ limit: 10000 }, 'tvl', 'desc');
+
+  // Calculate scores for all protocols
+  const rankedProtocols = calculateDexRankScores(allProtocols);
+
+  // Find this protocol in ranked list
+  const rankedProtocol = rankedProtocols.find((p) => p.slug === slug);
+
+  if (!rankedProtocol) {
+    // Protocol exists but wasn't in the list (shouldn't happen)
+    // Return with default score
+    return {
+      ...protocol,
+      scoreBreakdown: {
+        overall: 0,
+        rank: rankedProtocols.length + 1,
+        percentile: 0,
+        components: { tvl: 0, volume: null },
+        weights: { tvl: 1, volume: 0 },
+      },
+      rank: rankedProtocols.length + 1,
+      totalProtocols: rankedProtocols.length,
+    };
+  }
+
+  return {
+    ...protocol,
+    scoreBreakdown: rankedProtocol.scoreBreakdown,
+    rank: rankedProtocol.scoreBreakdown.rank,
+    totalProtocols: rankedProtocols.length,
+  };
 }
