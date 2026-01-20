@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getChainBySlug, getProtocolsByChain, getAllChainSlugs } from '@/lib/data/chains';
 import { JsonLd } from '@/components/seo/json-ld';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { generateChainSchema } from '@/lib/seo/schemas';
 import { ChainHeader } from '@/components/chain/chain-header';
 import { ChainDexList } from '@/components/chain/chain-dex-list';
@@ -65,6 +66,11 @@ export default async function ChainPage({
 
   return (
     <main className="container mx-auto py-8 px-4">
+      <Breadcrumbs items={[
+        { name: 'Chains', href: '/chains' },
+        { name: chain.name, href: `/chains/${slug}` },
+      ]} />
+
       <JsonLd data={jsonLd} />
 
       <ChainHeader

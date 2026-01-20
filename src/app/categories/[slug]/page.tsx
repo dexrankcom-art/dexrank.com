@@ -7,6 +7,7 @@ import {
   getAllCategorySlugs,
 } from '@/lib/data/categories';
 import { JsonLd } from '@/components/seo/json-ld';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { generateCategorySchema } from '@/lib/seo/schemas';
 import { CategoryHeader } from '@/components/category/category-header';
 import { CategoryDexList } from '@/components/category/category-dex-list';
@@ -68,6 +69,11 @@ export default async function CategoryPage({
 
   return (
     <main className="container mx-auto py-8 px-4">
+      <Breadcrumbs items={[
+        { name: 'Categories', href: '/categories' },
+        { name: category.pluralName, href: `/categories/${slug}` },
+      ]} />
+
       <JsonLd data={jsonLd} />
 
       <CategoryHeader

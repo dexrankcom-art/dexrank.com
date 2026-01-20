@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getGuideBySlug, getAllGuideSlugs } from '@/lib/content/guides';
 import { JsonLd } from '@/components/seo/json-ld';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { generateGuideSchema } from '@/lib/seo/schemas';
 import { Badge } from '@/components/ui/badge';
 
@@ -70,6 +71,11 @@ export default async function GuidePage({
 
   return (
     <main className="container mx-auto py-8 px-4 max-w-4xl">
+      <Breadcrumbs items={[
+        { name: 'Guides', href: '/guides' },
+        { name: guide.frontmatter.title, href: `/guides/${slug}` },
+      ]} />
+
       <JsonLd data={jsonLd} />
 
       <article>

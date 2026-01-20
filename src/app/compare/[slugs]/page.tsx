@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getProtocolBySlugWithRanking } from '@/lib/data/protocols';
 import { parseComparisonSlug, getCanonicalComparisonSlug } from '@/lib/comparison/utils';
 import { JsonLd } from '@/components/seo/json-ld';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { generateComparisonSchema } from '@/lib/seo/schemas';
 import { ComparisonHeader } from '@/components/comparison/comparison-header';
 import { MetricsComparison } from '@/components/comparison/metrics-comparison';
@@ -93,6 +94,11 @@ export default async function ComparePage({
 
   return (
     <main className="container mx-auto py-8 px-4">
+      <Breadcrumbs items={[
+        { name: 'Compare', href: '/compare' },
+        { name: `${dex1.name} vs ${dex2.name}`, href: `/compare/${slugs}` },
+      ]} />
+
       <JsonLd data={jsonLd} />
 
       <ComparisonHeader dex1={dex1} dex2={dex2} />

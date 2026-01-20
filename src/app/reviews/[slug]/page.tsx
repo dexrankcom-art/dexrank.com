@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getProtocolBySlugWithRanking, getAllProtocolSlugs } from '@/lib/data/protocols';
 import { getEditorialContent } from '@/lib/content/reviews';
 import { JsonLd } from '@/components/seo/json-ld';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { generateReviewSchema } from '@/lib/seo/schemas';
 import { ReviewHeader } from '@/components/reviews/review-header';
 import { MetricsGrid } from '@/components/reviews/metrics-grid';
@@ -77,6 +78,11 @@ export default async function ReviewPage({
 
   return (
     <main className="container mx-auto py-8 px-4">
+      <Breadcrumbs items={[
+        { name: 'Reviews', href: '/reviews' },
+        { name: protocol.name, href: `/reviews/${slug}` },
+      ]} />
+
       <JsonLd data={jsonLd} />
 
       <ReviewHeader
