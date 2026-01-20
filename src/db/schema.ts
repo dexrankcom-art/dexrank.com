@@ -83,3 +83,13 @@ export const syncStatus = pgTable('sync_status', {
   recordsProcessed: integer('records_processed'),
   ...timestamps,
 });
+
+// Newsletter subscribers
+export const newsletterSubscribers = pgTable('newsletter_subscribers', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  email: varchar('email', { length: 255 }).unique().notNull(),
+  subscribedAt: timestamp('subscribed_at', { withTimezone: true }).defaultNow(),
+  unsubscribedAt: timestamp('unsubscribed_at', { withTimezone: true }),
+}, (table) => [
+  index('newsletter_email_idx').on(table.email),
+]);
