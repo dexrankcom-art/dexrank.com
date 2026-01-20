@@ -15,6 +15,7 @@ DexRank v1.0 delivers a database-first DEX comparison platform covering **500 DE
 - [x] **Phase 3: Content & Differentiation** - Editorial reviews, comparisons, chain pages, guides, methodology
 - [x] **Phase 4: Production & Polish** - Animations, dark mode, SEO, social sharing, newsletter
 - [x] **Phase 5: Quality & Production Readiness** - Accessibility, error handling, monitoring, UX polish
+- [ ] **Phase 6: Gap Closure** - Vitals API endpoint, index pages for breadcrumb navigation
 
 ## Phase Details
 
@@ -131,6 +132,22 @@ Plans:
 *Note: Original Phase 5 (Data Enhancements - historical charts, security indicators) moved to v2 milestone.*
 *Note: JSON-LD structured data and methodology link already complete from Phase 3.*
 
+### Phase 6: Gap Closure
+**Goal**: Close gaps identified by milestone audit - fix broken Web Vitals reporting and add missing index pages for breadcrumb navigation.
+**Depends on**: Phase 5
+**Gap Closure**: Addresses gaps from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. `/api/analytics/vitals` endpoint receives and logs Web Vitals beacon data
+  2. `/reviews` index page exists with DEX listing
+  3. `/chains` index page exists with chain listing
+  4. `/categories` index page exists with category listing
+  5. `/compare` index page exists with comparison tool entry point
+  6. All breadcrumb parent links resolve (no 404s)
+**Plans**: 1 plan in 1 wave
+
+Plans:
+- [ ] 06-01-PLAN.md — Vitals API endpoint and index pages (Wave 1)
+
 ## Progress
 
 **Execution Order:**
@@ -143,6 +160,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 3. Content & Differentiation | 7/7 | Complete | 2026-01-20 |
 | 4. Production & Polish | 7/7 | Complete | 2026-01-20 |
 | 5. Quality & Production Readiness | 4/4 | Complete | 2026-01-20 |
+| 6. Gap Closure | 0/1 | Pending | — |
 
 ---
 
@@ -209,3 +227,4 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Future vision added: 2026-01-18*
 *Phase 5 replaced: 2026-01-20 (Data Enhancements → Quality & Production Readiness, 17 todos)*
 *Phase 5 complete: 2026-01-20*
+*Phase 6 added: 2026-01-20 (Gap Closure from audit - vitals API + index pages)*
