@@ -71,7 +71,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-10 todo(s) in `.planning/todos/pending/`:
+17 todo(s) in `.planning/todos/pending/`:
 
 **Content (1):**
 - Create content update SOP document
@@ -79,18 +79,23 @@ Recent decisions affecting current work:
 **SEO (1):**
 - Add canonical URLs for duplicate content
 
-**UI (5):**
+**UI (9):**
 - Add last updated date to articles
 - Implement breadcrumb navigation
 - Create 404 page with helpful navigation
 - Add methodology link in ranking table header
 - Show data refresh timestamp on homepage
+- Accessibility audit and fixes (Phase 4)
+- Add error boundaries with fallback UI (Phase 4)
+- Optimize font loading for LCP (Phase 4)
+- Prevent AI slop in generated content
 
 **Content/Legal (1):**
 - Add disclaimer for affiliate links
 
-**Tooling (1):**
+**Tooling (2):**
 - Set up error monitoring (Sentry)
+- Add Real User Monitoring for Core Web Vitals (Phase 4)
 
 *Note: 03-01 completed style guide, content checklist, and JSON-LD infrastructure - removed from todos*
 
