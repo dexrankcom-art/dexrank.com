@@ -1,0 +1,183 @@
+---
+title: "DEX Fees Explained: Trading, Gas, and LP Fees"
+description: "Understand the complete cost structure of DEX trading. Break down swap fees, gas costs, LP earnings, and how to minimize your expenses."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "8 min read"
+difficulty: "intermediate"
+tags: ["defi", "fees", "gas", "trading"]
+---
+
+## The Three Types of DEX Fees
+
+Every DEX trade involves multiple fees. Understanding each helps you minimize costs and choose optimal trading venues.
+
+### 1. Swap Fees (Protocol Fees)
+
+The DEX protocol charges a percentage of each trade. This fee goes to liquidity providers and sometimes the protocol treasury.
+
+| DEX | Standard Fee |
+|-----|--------------|
+| Uniswap v2 | 0.30% |
+| Uniswap v3 | 0.01%, 0.05%, 0.30%, or 1.00% |
+| SushiSwap | 0.30% (0.25% to LPs, 0.05% to treasury) |
+| Curve | 0.04% for stablecoin pools |
+| PancakeSwap | 0.25% |
+
+A $1,000 swap on Uniswap v2 costs $3 in swap fees. On Curve's stablecoin pools, the same swap costs $0.40.
+
+### 2. Network Fees (Gas)
+
+Blockchain transactions require gas, paid to validators who process the transaction. Gas varies by:
+- Network congestion
+- Transaction complexity
+- Chain used
+
+Typical gas costs for a simple swap:
+- Ethereum mainnet: $5-50
+- Arbitrum: $0.10-1.00
+- Base: $0.05-0.50
+- Solana: $0.001-0.01
+- BNB Chain: $0.05-0.30
+
+Gas is paid regardless of swap size. A $100 swap and a $100,000 swap cost similar gas.
+
+### 3. Price Impact
+
+Large trades relative to pool liquidity receive worse prices. This is not a fee collected by anyone, but a cost to you.
+
+Example: ETH/USDC pool with $10M liquidity
+- $1,000 swap: 0.01% price impact
+- $100,000 swap: 1% price impact
+- $500,000 swap: 5% price impact
+
+Price impact increases quadratically with trade size. Splitting large trades often reduces total cost.
+
+## Calculating Total Trading Cost
+
+**Total cost = Swap fee + Gas + Price impact**
+
+### Example 1: Small Trade on Ethereum
+
+Swapping $200 ETH to USDC on Uniswap v3 (0.30% pool):
+- Swap fee: $200 * 0.30% = $0.60
+- Gas: $15 (congested period)
+- Price impact: negligible
+- **Total: $15.60 (7.8% of trade value)**
+
+### Example 2: Small Trade on Solana
+
+Swapping $200 SOL to USDC on Jupiter:
+- Swap fee: $200 * 0.30% = $0.60
+- Gas: $0.005
+- Price impact: negligible
+- **Total: $0.605 (0.3% of trade value)**
+
+### Example 3: Large Trade on Arbitrum
+
+Swapping $50,000 ETH to USDC on Uniswap v3 (0.05% pool):
+- Swap fee: $50,000 * 0.05% = $25
+- Gas: $0.50
+- Price impact: 0.5% = $250
+- **Total: $275.50 (0.55% of trade value)**
+
+## Minimizing Costs
+
+### Choose the Right Chain
+
+For trades under $1,000, gas dominates. Use low-fee chains:
+- Solana for near-zero gas
+- Base, Arbitrum, Optimism for sub-dollar gas
+- BNB Chain for cheap EVM transactions
+
+For trades over $10,000, swap fees and price impact matter more. Ethereum mainnet may be acceptable if it offers better liquidity.
+
+### Use Appropriate Fee Tiers
+
+Uniswap v3 offers multiple fee tiers:
+- 0.01%: Stablecoins (USDC/USDT)
+- 0.05%: Correlated pairs (ETH/stETH)
+- 0.30%: Standard pairs (ETH/USDC)
+- 1.00%: Exotic pairs
+
+Most volume concentrates in 0.05% pools for major pairs. Check which tier has the best liquidity for your trade.
+
+### Aggregate for Large Trades
+
+DEX aggregators (1inch, Jupiter, Paraswap) split trades across multiple pools and DEXs to minimize price impact. A $100,000 trade might route through 5 different pools.
+
+### Time Your Trades
+
+Gas prices follow predictable patterns. Ethereum is cheapest during off-peak hours (nights and weekends in US). Track gas at etherscan.io/gastracker.
+
+### Set Appropriate Slippage
+
+High slippage tolerance (5-10%) makes you vulnerable to sandwich attacks. Keep slippage as low as possible for your trade:
+- Stablecoins: 0.1%
+- Major pairs: 0.5%
+- Volatile tokens: 1-3%
+
+## Understanding LP Fee Earnings
+
+If you provide liquidity, you earn a portion of swap fees.
+
+### Fee Distribution
+
+In a $10M pool with 0.30% fees and $5M daily volume:
+- Daily fees: $5,000,000 * 0.30% = $15,000
+- If you provide $100,000 (1% of pool): $150/day
+- Annualized: approximately 55% APY (before impermanent loss)
+
+### Fee Tier Selection for LPs
+
+Higher fee tiers earn more per swap but attract less volume. For stable pairs, the 0.01% pool often generates more total fees due to massive volume.
+
+Consider:
+- Higher fees = more earnings per trade
+- Lower fees = more trade volume
+- Optimal depends on the specific pair and market conditions
+
+## Hidden Costs
+
+### MEV and Sandwich Attacks
+
+Bots monitor pending transactions and can extract value:
+1. Bot sees your swap order in mempool
+2. Bot front-runs with a buy, moving price up
+3. Your swap executes at a worse price
+4. Bot sells for profit
+
+This costs traders an estimated 0.1-0.5% on vulnerable transactions. Protect yourself:
+- Use private RPCs (Flashbots Protect, MEV Blocker)
+- Trade on chains with MEV protection (Solana has some built-in)
+- Keep slippage tight to limit extraction
+
+### Failed Transactions
+
+On Ethereum, failed transactions still cost gas. Common causes:
+- Slippage exceeded during confirmation
+- Token transfer restrictions
+- Smart contract errors
+
+A failed swap might cost $10-30 in wasted gas.
+
+### Approval Transactions
+
+First-time swaps require approval (one per token per DEX). Approval costs gas without executing any trade. Budget for this when starting.
+
+## Fee Comparison by Scenario
+
+| Scenario | Best Option | Est. Cost |
+|----------|-------------|-----------|
+| $50 swap, learning | Solana, Base | $0.20 |
+| $500 stable swap | Curve on L2 | $0.50 |
+| $5,000 ETH/USDC | Uniswap v3 0.05% on Arbitrum | $3.50 |
+| $50,000 trade | Aggregator, possibly split chains | $50-100 |
+
+## Summary
+
+DEX fees include swap fees, gas, and price impact. Small trades are dominated by gas costs (favor low-fee chains). Large trades are dominated by swap fees and price impact (favor deep liquidity and aggregators).
+
+Understanding the fee structure helps you choose when, where, and how to trade. A 5-minute analysis before large trades can save hundreds of dollars.
+
+Compare fee structures across DEXs at [DexRank](/).

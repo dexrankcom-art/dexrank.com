@@ -1,0 +1,217 @@
+---
+title: "Concentrated Liquidity Strategies for Uniswap v3"
+description: "Advanced LP strategies for concentrated liquidity positions. Learn range setting, rebalancing, and maximizing fee income."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "10 min read"
+difficulty: "advanced"
+tags: ["defi", "lp", "uniswap", "strategies"]
+---
+
+## Concentrated Liquidity Fundamentals
+
+Uniswap v3 introduced concentrated liquidity: instead of providing liquidity across all prices, LPs choose a specific price range. Capital efficiency increases dramatically within the range, but positions earn nothing outside it.
+
+A position concentrated in a 10% range can achieve up to 4000x more capital efficiency than v2's full-range approach.
+
+## Range Selection Strategies
+
+### Symmetric Ranges
+
+Center your range around current price with equal upside and downside.
+
+**Example:** ETH at $2,000
+- Range: $1,800 to $2,200 (10% each direction)
+- Earns fees if ETH stays between these prices
+- Position goes 100% ETH below $1,800, 100% USDC above $2,200
+
+**Best for:** Markets without strong directional bias.
+
+### Asymmetric Ranges
+
+Skew your range based on expected price movement.
+
+**Bullish example:** ETH at $2,000
+- Range: $1,900 to $2,500
+- More upside capture, less downside protection
+- Position accumulates ETH on pullbacks
+
+**Best for:** When you have directional conviction.
+
+### Full-Range Positions
+
+Setting min to 0 and max to infinity mimics Uniswap v2.
+
+**When useful:**
+- Extremely volatile pairs where any range risks going out of range
+- Tokens with unpredictable price discovery
+- Passive LPs who cannot actively manage
+
+**Tradeoff:** Much lower capital efficiency.
+
+## Fee Tier Selection
+
+Uniswap v3 offers four fee tiers:
+
+| Fee | Typical Use |
+|-----|-------------|
+| 0.01% | Stablecoin pairs |
+| 0.05% | Correlated assets |
+| 0.30% | Standard pairs |
+| 1.00% | Exotic pairs |
+
+### Tier Strategy
+
+Lower tiers attract more volume but earn less per trade. Higher tiers earn more per trade but see less activity.
+
+**Analysis approach:**
+1. Check current volume distribution across tiers
+2. Calculate fee earnings: volume * fee rate * your share
+3. Consider competition: overcrowded ranges earn less per LP
+
+For most ETH/USDC positions, 0.05% has become dominant due to high volume concentration.
+
+## Rebalancing Approaches
+
+### Passive (Hold and Hope)
+
+Set range and wait. If price leaves range, either:
+- Wait for return
+- Accept 100% exposure to one asset
+
+**Pros:** Lowest gas costs, least management
+**Cons:** Misses fees when out of range, crystallizes IL
+
+### Active Rebalancing
+
+When price approaches range edge:
+1. Close position
+2. Swap to rebalance token ratio
+3. Open new position centered on current price
+
+**Pros:** Maximizes time in range earning fees
+**Cons:** Gas costs, realized IL, execution complexity
+
+### Automated Management
+
+Protocols like Arrakis, Gamma, and Bunni automate rebalancing:
+- Monitor positions continuously
+- Rebalance according to strategies
+- Compound fees automatically
+
+**Tradeoff:** Management fees (typically 1-10% of earned fees).
+
+## Managing Impermanent Loss
+
+Concentrated liquidity amplifies IL. A 2x price move in v2 causes 5.7% IL. The same move in a 10% range causes approximately 25% IL.
+
+### IL Mitigation Strategies
+
+**Wider ranges:** Accept lower capital efficiency for reduced IL risk.
+
+**Hedging:** Use perpetual shorts or options to offset directional exposure.
+
+**Correlated pairs:** ETH/stETH has minimal relative price movement, reducing IL significantly.
+
+**Higher fee tiers:** More fees help offset IL, but volume must be sufficient.
+
+### When IL is Acceptable
+
+IL is the cost of earning fees. If your range generates 50% APY in fees but experiences 20% IL, net return is still strongly positive.
+
+Calculate expected IL for your range using tools like Revert Finance before depositing.
+
+## Position Sizing
+
+### Concentration Risk
+
+Putting all capital in one narrow range is extremely risky. Price leaving the range means zero fee income.
+
+### Diversification Approaches
+
+**Multiple ranges:** Split capital across several ranges around current price.
+
+**Multiple pairs:** Diversify across different token pairs.
+
+**Multiple chains:** Same strategy on Ethereum, Arbitrum, and Polygon.
+
+### Example Portfolio
+
+$100,000 total LP capital:
+- $30,000: ETH/USDC 0.05%, tight range (-5%/+5%)
+- $30,000: ETH/USDC 0.05%, medium range (-15%/+15%)
+- $20,000: WBTC/ETH 0.30%, medium range
+- $20,000: stETH/ETH 0.05%, very tight range
+
+This balances fee potential with range coverage.
+
+## Analytics and Tools
+
+### Position Monitoring
+
+**Revert Finance:** Detailed v3 analytics including fee APR, IL tracking, and range performance.
+
+**DeBank:** Portfolio overview showing LP positions across protocols.
+
+**Uniswap Interface:** Basic position view with fees earned.
+
+### Strategy Planning
+
+**Uniswap v3 Simulator:** Model positions before deployment.
+
+**Yield Samurai:** Compare v3 positions across fee tiers.
+
+**DeFi Llama:** Track TVL and volume trends.
+
+## Entry and Exit Timing
+
+### Entering Positions
+
+**During low volatility:** Less likely to immediately go out of range.
+
+**After major price moves:** Volatility often decreases, good time to establish new ranges.
+
+**Avoid:** Right before expected catalysts (earnings, upgrades, macro events).
+
+### Exiting Positions
+
+**When range goes stale:** If price consistently stays at one edge, fees suffer.
+
+**Before expected volatility:** Major events can cause rapid exits from ranges.
+
+**When better opportunities exist:** Reallocate to higher-APR pools.
+
+## Gas Optimization
+
+Ethereum mainnet v3 operations are expensive:
+- Open position: $50-150
+- Close position: $30-80
+- Collect fees: $15-40
+
+### Reducing Costs
+
+**Use L2s:** Arbitrum and Polygon have v3 with 90%+ gas savings.
+
+**Batch operations:** Some interfaces allow combining collect + close.
+
+**Timing:** Execute during low gas periods (weekends, off-hours).
+
+**Hold longer:** Fewer rebalances mean fewer gas costs.
+
+## Common Mistakes
+
+**Too narrow ranges:** Maximizing efficiency also maximizes risk of exiting range.
+
+**Ignoring gas:** Frequent rebalancing can consume all fee profits.
+
+**Chasing APY:** High displayed APRs often come from unsustainable ranges or low volume.
+
+**Not collecting fees:** Uncollected fees do not compound automatically in v3.
+
+## Summary
+
+Concentrated liquidity offers dramatically improved capital efficiency for active LPs willing to manage positions. Success requires understanding range selection, rebalancing triggers, and IL dynamics.
+
+Start with wider ranges to learn the mechanics. Gradually narrow as you understand your specific pair's behavior. Use analytics tools to track performance and adjust strategy.
+
+Compare concentrated liquidity opportunities at [DexRank](/).

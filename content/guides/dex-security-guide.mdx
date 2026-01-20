@@ -1,0 +1,206 @@
+---
+title: "DEX Security Guide: Protecting Your Funds"
+description: "Learn how to stay safe when using decentralized exchanges. Understand smart contract risks, audit verification, and common scam patterns."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "8 min read"
+difficulty: "intermediate"
+tags: ["defi", "security", "scams", "safety"]
+---
+
+## Self-Custody Means Self-Responsibility
+
+When using a DEX, no customer support can reverse mistakes. Understanding security risks and prevention is essential for protecting your funds.
+
+This guide covers the main threat categories and practical defenses for each.
+
+## Smart Contract Risks
+
+### What Can Go Wrong
+
+Smart contracts are code. Code can have bugs. When bugs exist in DeFi contracts holding billions, attackers find them.
+
+Common vulnerability types:
+- **Reentrancy attacks**: Contract calls external code before updating state
+- **Oracle manipulation**: Price feeds are manipulated to drain pools
+- **Logic errors**: Flaws in the math allow abnormal withdrawals
+- **Access control**: Admin functions accessible to attackers
+
+### Assessing Contract Safety
+
+**Check for audits:** Reputable DEXs publish audit reports from firms like Trail of Bits, OpenZeppelin, or Consensys Diligence. Multiple audits from different firms increase confidence.
+
+Where to find audits:
+- Protocol documentation
+- DeFi Llama protocol pages
+- Audit firm websites
+
+**Audit limitations:** Audits reduce risk but do not eliminate it. Audited protocols have been exploited. Treat audits as one factor, not a guarantee.
+
+**Time in production:** Contracts that have held significant value for years without exploits have passed a real-world stress test. New contracts, regardless of audits, carry higher risk.
+
+**Verify contracts:** On Etherscan, check that the contract source code is verified and matches what the protocol claims. Unverified contracts are red flags.
+
+## Token Approval Risks
+
+### The Approval Problem
+
+Before swapping ERC-20 tokens, you approve the DEX contract to move tokens from your wallet. Many approvals default to unlimited amounts.
+
+**The risk:** If the approved contract is compromised or malicious, it can drain all approved tokens, not just the amount you intended to swap.
+
+### Best Practices
+
+1. **Use exact approval amounts** when your wallet supports it
+2. **Revoke unnecessary approvals** regularly at revoke.cash or etherscan.io/tokenapprovalchecker
+3. **Limit approvals to contracts you actively use**
+4. **Use hardware wallets** that prompt for each approval
+
+### Checking Your Approvals
+
+1. Visit revoke.cash
+2. Connect your wallet
+3. Review all active approvals
+4. Revoke any you do not recognize or no longer need
+
+Schedule monthly reviews of your approval list.
+
+## Phishing and Fake Sites
+
+### How Phishing Works
+
+Attackers create sites that look identical to legitimate DEXs:
+- dexrank.com (real) vs dexrank-app.com (fake)
+- app.uniswap.org (real) vs app-uniswap.org (fake)
+
+When you connect and approve tokens, the fake site drains your wallet.
+
+### Phishing Vectors
+
+- Search engine ads for DEX names
+- Social media DMs with "support" links
+- Discord messages with "airdrop" claims
+- Email with "verification required" messages
+- Typosquatting domains
+
+### Defense
+
+1. **Bookmark official URLs** and only use bookmarks
+2. **Never click links** from DMs, emails, or ads
+3. **Verify the URL** before connecting your wallet
+4. **Check SSL certificates** for the correct organization
+5. **If something feels wrong, close the tab**
+
+### Official DEX URLs
+
+Bookmark these (verify independently):
+- app.uniswap.org
+- jup.ag
+- curve.fi
+- app.sushi.com
+- pancakeswap.finance
+
+## Token Scams
+
+### Fake Tokens
+
+Scammers deploy tokens with names similar to legitimate projects:
+- "Uniswap v4 Token" - Uniswap has no v4 token
+- "ETH2.0 Rewards" - No such thing
+- Tokens airdropped to your wallet - Often wallet drainers
+
+### Honeypots
+
+Some tokens can be bought but not sold. The contract blocks sell transactions. You swap in, price looks good, but you can never swap out.
+
+### Rug Pulls
+
+Project teams drain liquidity and disappear:
+1. Team creates token, provides initial liquidity
+2. Marketing drives buys, price increases
+3. Team removes liquidity, crashing price to zero
+4. Buyers left with worthless tokens
+
+### Defense Against Token Scams
+
+1. **Only trade tokens you have researched**
+2. **Verify contract addresses** from official documentation
+3. **Check liquidity lock status** on team-provided liquidity
+4. **Be skeptical of tokens promoted in DMs or social ads**
+5. **Use token scanners** (TokenSniffer, GoPlus) for automated checks
+
+## MEV and Sandwich Attacks
+
+### How Sandwiches Work
+
+1. You submit a swap transaction
+2. A bot sees it in the mempool
+3. Bot buys before you (front-run), moving price up
+4. Your swap executes at a worse price
+5. Bot sells after you (back-run), profiting
+
+### Protection Methods
+
+- **Private transaction pools**: Flashbots Protect, MEV Blocker
+- **Lower slippage tolerance**: Limits how much bots can extract
+- **Chains with MEV protection**: Solana processes transactions in parallel
+- **DEXs with built-in protection**: Some DEXs route through private pools
+
+## Hardware Wallet Usage
+
+### Why Hardware Wallets Matter
+
+Hot wallets (browser extensions) are vulnerable to malware. Hardware wallets keep private keys offline, requiring physical confirmation for each transaction.
+
+### Recommended Setup
+
+1. Purchase a hardware wallet (Ledger, Trezor) from official sources
+2. Set up with strong PIN and backup phrase
+3. Connect hardware wallet to MetaMask or use native software
+4. All transaction approvals require physical confirmation
+
+### What Hardware Wallets Protect Against
+
+- Malware stealing your private keys
+- Fake approval requests from compromised sites
+- Clipboard hijacking that changes wallet addresses
+
+Hardware wallets do NOT protect against approving bad contracts. You must still verify what you sign.
+
+## Incident Response
+
+### If You Think You Are Compromised
+
+1. **Do not panic, but act quickly**
+2. Transfer remaining assets to a new, clean wallet
+3. Revoke all approvals on the compromised wallet
+4. Check transaction history for unauthorized activity
+5. Report to relevant communities (may help others)
+
+### If Funds Were Stolen
+
+Realistically, stolen crypto is usually not recoverable. Focus on:
+- Securing remaining assets
+- Understanding how the compromise happened
+- Preventing future incidents
+
+## Security Checklist
+
+Before each DEX session:
+- [ ] Using bookmarked URL
+- [ ] Verified correct domain in browser
+- [ ] Hardware wallet connected
+- [ ] Slippage set appropriately
+
+Monthly:
+- [ ] Review and revoke unnecessary approvals
+- [ ] Check wallet for unexpected tokens (do not interact)
+- [ ] Update wallet software
+
+## Summary
+
+DEX security requires active vigilance. Smart contract risk, phishing, token scams, and MEV are the primary threats. Defense layers include hardware wallets, approval management, URL verification, and skepticism toward unsolicited offers.
+
+No single measure provides complete protection. Combining multiple practices significantly reduces risk.
+
+Research DEX security records at [DexRank](/).

@@ -1,0 +1,214 @@
+---
+title: "Perpetual DEX Trading Guide"
+description: "Understand perpetual futures on decentralized exchanges. Learn about leverage, funding rates, liquidation, and risk management."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "9 min read"
+difficulty: "advanced"
+tags: ["defi", "perpetuals", "leverage", "trading"]
+---
+
+## What Are Perpetual Futures?
+
+Perpetual futures (perps) are derivative contracts that let you speculate on asset prices with leverage, without expiration dates. Unlike traditional futures that settle on a specific date, perps can be held indefinitely.
+
+On decentralized perp DEXs like GMX, dYdX, and Hyperliquid, you trade these contracts from self-custody with no KYC.
+
+## How Perps Work
+
+### Long and Short Positions
+
+**Long:** You profit when price goes up. A 10x long on ETH at $2,000 gives you exposure to $20,000 of ETH with $2,000 collateral.
+
+**Short:** You profit when price goes down. A 10x short on ETH at $2,000 profits if ETH falls.
+
+### Leverage Mechanics
+
+Leverage multiplies both gains and losses.
+
+**Example:** 10x leverage, $1,000 collateral
+- If ETH moves +5%: You gain $500 (50% profit on collateral)
+- If ETH moves -5%: You lose $500 (50% loss on collateral)
+- If ETH moves -10%: Position liquidated (100% loss)
+
+Higher leverage means smaller price moves can wipe out your position.
+
+### Margin and Collateral
+
+Your deposited funds serve as collateral. Margin requirements vary by platform:
+
+- **Initial margin:** Amount needed to open position
+- **Maintenance margin:** Minimum to keep position open
+- **Cross margin:** All collateral backs all positions
+- **Isolated margin:** Specific collateral for specific positions
+
+## Funding Rates
+
+Funding rates keep perp prices aligned with spot prices.
+
+### How Funding Works
+
+Every 8 hours (on most platforms):
+- If perp price > spot price: Longs pay shorts
+- If perp price < spot price: Shorts pay longs
+
+### Funding Rate Impact
+
+**Positive funding:** Bullish market, expensive to hold longs
+**Negative funding:** Bearish market, expensive to hold shorts
+
+Annualized funding can reach 50-100% during extreme market conditions. This significantly impacts holding costs for longer-term positions.
+
+### Funding Rate Strategy
+
+- Check funding before entering positions
+- Avoid opening in the direction of extreme funding
+- Consider funding as part of total position cost
+
+## Liquidation
+
+If your position loses enough that margin falls below maintenance requirements, the protocol liquidates it.
+
+### Liquidation Process
+
+1. Price moves against your position
+2. Unrealized loss approaches your collateral
+3. Liquidation engine closes your position
+4. You lose most or all of your collateral
+5. Some platforms charge liquidation penalties
+
+### Liquidation Price Calculation
+
+For a 10x long opened at $2,000:
+- Your $1,000 collateral supports $10,000 exposure
+- 10% price drop ($200) wipes out collateral
+- Liquidation price approximately $1,800 (varies by platform)
+
+### Avoiding Liquidation
+
+**Use lower leverage:** 2-5x is much safer than 10-20x
+
+**Set stop losses:** Exit before liquidation
+
+**Monitor positions:** Markets move 24/7
+
+**Add collateral:** If price moves against you, add margin
+
+## Major Perp DEXs
+
+### GMX (Arbitrum, Avalanche)
+
+Uses GLP liquidity pool model. Traders trade against the pool.
+
+**Characteristics:**
+- Zero price impact for trades under caps
+- GLP earns from trader losses
+- 30+ trading pairs
+- $100M+ TVL
+
+### dYdX
+
+Order book model with off-chain matching, on-chain settlement.
+
+**Characteristics:**
+- High throughput (1000+ TPS)
+- Own L1 chain (Cosmos-based)
+- Closest to CEX experience
+- Deep liquidity on major pairs
+
+### Hyperliquid
+
+Newer entrant with custom L1 and aggressive fee structure.
+
+**Characteristics:**
+- Sub-cent trading fees
+- Fast execution
+- Growing liquidity
+- Airdrop history attracts volume
+
+## Risk Management
+
+### Position Sizing
+
+Never risk more than 1-5% of trading capital on a single trade. With leverage, this means small position sizes relative to your account.
+
+**Example:** $10,000 account, 2% risk, 10x leverage
+- Maximum loss: $200
+- Position size: $2,000 exposure
+- Collateral: $200
+
+### Stop Losses
+
+Set stop losses when entering positions. Determine your exit point before the trade, not after.
+
+**Types:**
+- Hard stop: Automatic close at price
+- Mental stop: Manual close (requires discipline)
+- Trailing stop: Follows price to lock in gains
+
+### Correlation Risk
+
+Multiple positions in correlated assets (BTC and ETH) compound risk. If crypto drops, both positions lose simultaneously.
+
+Diversify across uncorrelated positions or limit total directional exposure.
+
+## Trading Strategies
+
+### Trend Following
+
+Trade in direction of established trend. Use longer timeframes to identify trend, shorter for entry.
+
+**Entry:** Price breaks resistance in uptrend
+**Exit:** Trailing stop or trend reversal signal
+
+### Mean Reversion
+
+Trade against extreme moves, expecting return to average.
+
+**Entry:** Price deviates significantly from moving average
+**Exit:** Price returns to mean or stop loss hits
+
+### Funding Rate Arbitrage
+
+Capture funding by taking the paying side while hedging spot exposure.
+
+**Example:** Positive funding on perps
+1. Long spot ETH
+2. Short perp ETH
+3. Collect funding from shorts
+4. Delta neutral if positions equal
+
+Requires capital efficiency calculation and monitoring.
+
+## Costs and Considerations
+
+### Fee Structure
+
+Typical perp DEX fees:
+- Opening/closing: 0.05-0.10%
+- Funding: Variable (8-hour intervals)
+- Liquidation penalty: 1-5%
+
+### Slippage
+
+Large positions move prices, especially on smaller platforms. Check depth before sizing trades.
+
+### Oracle Risk
+
+Perp prices depend on oracle feeds. Oracle manipulation or delays can cause unexpected liquidations.
+
+## Getting Started Safely
+
+1. **Start with paper trading:** dYdX testnet, practice without risk
+2. **Use minimal leverage:** 2-3x maximum while learning
+3. **Trade small:** Risk only what you can lose entirely
+4. **Focus on one pair:** Learn ETH-USD or BTC-USD deeply
+5. **Keep a trading journal:** Track every trade and its rationale
+
+## Summary
+
+Perpetual DEXs offer leveraged exposure to crypto assets without centralized exchange counterparty risk. The tradeoffs include liquidation risk, funding costs, and smart contract exposure.
+
+Approach perp trading with caution. Leverage amplifies both wins and losses. Most leverage traders lose money over time. Proper risk management is essential for survival.
+
+Research perp DEX options at [DexRank](/categories/derivatives).

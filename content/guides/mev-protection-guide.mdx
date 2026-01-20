@@ -1,0 +1,198 @@
+---
+title: "MEV Protection Guide: Defending Your Trades"
+description: "Understand MEV attacks on DEX trades. Learn about sandwich attacks, front-running, and practical protection strategies."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "8 min read"
+difficulty: "advanced"
+tags: ["defi", "mev", "security", "trading"]
+---
+
+## What is MEV?
+
+**Maximal Extractable Value (MEV)** refers to profit that can be extracted by reordering, inserting, or censoring transactions within a block. In practice, it often means sophisticated actors profiting at the expense of regular traders.
+
+On Ethereum, MEV extraction totals millions of dollars daily. Understanding and protecting against it is essential for active DEX users.
+
+## Common MEV Attacks
+
+### Sandwich Attacks
+
+The most common attack on DEX traders.
+
+**How it works:**
+1. You submit a swap: Buy 10 ETH for USDC
+2. Attacker sees your pending transaction in the mempool
+3. Attacker front-runs: Buys ETH before you, raising the price
+4. Your transaction executes at the now-higher price
+5. Attacker back-runs: Sells ETH after you, profiting from price impact
+
+**Your loss:** You receive fewer tokens than a fair market price would provide.
+
+### Front-Running
+
+Attacker sees a profitable transaction and copies it, executing first.
+
+**Example:** You spot an arbitrage opportunity and submit a transaction. A bot copies your strategy and submits with higher gas, capturing the opportunity instead.
+
+### Back-Running
+
+Less harmful than sandwiches. Attacker executes immediately after your transaction to capture residual arbitrage.
+
+**Example:** Your large buy creates a price discrepancy. Arbitrageur trades to restore balance. This does not directly harm you but captures value your trade created.
+
+### Liquidation Hunting
+
+Bots monitor DeFi positions approaching liquidation thresholds and compete to execute liquidations for the bonus.
+
+## Quantifying MEV Impact
+
+Average MEV extracted per trade varies by:
+- Trade size: Larger trades are more profitable to attack
+- Token liquidity: Illiquid tokens have more price impact
+- Slippage tolerance: Higher tolerance means more room for extraction
+- Time of day: Congested periods have more competition
+
+Studies estimate sandwich attacks extract 0.1-0.5% of large trade values on average. On a $10,000 trade, this is $10-50 in lost value.
+
+## Protection Strategies
+
+### Use Private Transaction Pools
+
+Instead of broadcasting to the public mempool, send transactions to private pools:
+
+**Flashbots Protect:** Free RPC that routes through Flashbots builders
+- Setup: Add custom RPC to wallet
+- URL: rpc.flashbots.net
+
+**MEV Blocker:** Coalition of builders offering frontrunning protection
+- Similar RPC setup
+- Rebates a portion of MEV back to users
+
+**How it helps:** Transactions are not visible to searchers until included in a block.
+
+### Limit Slippage Tolerance
+
+Tight slippage limits reduce sandwich profitability:
+- 0.5% slippage: Sandwich must work within this margin
+- If attack would cause >0.5% impact, transaction reverts
+- Attacker wastes gas on failed attempt
+
+**Tradeoff:** Transactions fail more often in volatile markets.
+
+### Use DEX Aggregators with Protection
+
+Some aggregators route through protected channels:
+
+**CowSwap:** Batch auctions match trades peer-to-peer when possible, avoiding on-chain exposure entirely.
+
+**1inch Fusion:** Resolvers compete to fill orders, often providing better execution than public pools.
+
+### Time Your Trades
+
+MEV is most aggressive during:
+- High volatility periods
+- Major news events
+- Congested network conditions
+
+Trading during quieter periods reduces competition from MEV bots.
+
+### Split Large Trades
+
+Instead of one $100,000 swap:
+- Execute 10 x $10,000 swaps over time
+- Each individual trade has less price impact
+- Harder for sandwichers to profit from smaller amounts
+
+**Tradeoff:** More gas costs, longer execution.
+
+## Chain-Specific Considerations
+
+### Ethereum Mainnet
+
+Highest MEV extraction. Essential to use protection:
+- Flashbots Protect for transactions
+- CowSwap for swaps
+- Tight slippage settings
+
+### Solana
+
+Different architecture reduces some MEV but does not eliminate it:
+- Transactions processed in parallel
+- Less mempool visibility
+- Still vulnerable to collocated searchers
+- Jito protocol manages much of Solana MEV
+
+### Layer 2s (Arbitrum, Optimism)
+
+Currently less MEV than mainnet but growing:
+- Centralized sequencers have MEV power
+- Some L2s implement fair ordering
+- Protection tools less mature
+
+### BSC and Other Chains
+
+Varies by chain design:
+- Check if mempool is public
+- Investigate local MEV landscape
+- Use chain-specific protection when available
+
+## Evaluating MEV Protection Tools
+
+### Flashbots Protect
+
+**Pros:** Free, simple setup, reliable
+**Cons:** Transactions may be slightly slower
+
+### MEV Blocker
+
+**Pros:** Rebates portion of captured MEV, multiple builder support
+**Cons:** Newer, smaller builder set
+
+### CowSwap
+
+**Pros:** Strong MEV protection, gasless trades
+**Cons:** Only for Ethereum, requires specific token pairs
+
+### Private RPCs
+
+**Pros:** Direct protection from mempool exposure
+**Cons:** Must trust the RPC operator, potential centralization
+
+## Setting Up Protection
+
+### MetaMask + Flashbots Protect
+
+1. Open MetaMask Settings
+2. Networks > Add Network
+3. Enter Flashbots RPC details:
+   - Network Name: Flashbots Protect
+   - RPC URL: https://rpc.flashbots.net
+   - Chain ID: 1
+   - Symbol: ETH
+4. Switch to this network for protected transactions
+
+### Using CowSwap
+
+1. Visit swap.cow.fi
+2. Connect wallet
+3. Trades automatically use batch auctions
+4. No additional setup required
+
+## Monitoring MEV
+
+Track MEV on your transactions:
+
+**Eigenphi:** Analytics on MEV extraction
+**Flashbots Explorer:** View protected transaction status
+**MEV Explore:** Historical MEV data
+
+Understanding how much MEV you are losing helps evaluate protection effectiveness.
+
+## Summary
+
+MEV extraction is an invisible tax on DEX trading. Without protection, sophisticated actors capture value from your transactions through front-running and sandwich attacks.
+
+Protection requires deliberate action: private RPCs, appropriate slippage settings, and using protected services like CowSwap. The setup takes minutes and can save significant value over time.
+
+Research MEV-protected DEX options at [DexRank](/).

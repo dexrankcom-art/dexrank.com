@@ -1,0 +1,233 @@
+---
+title: "Cross-Chain DEX Guide: Trading Across Blockchains"
+description: "Navigate cross-chain swaps and bridges safely. Understand bridging mechanics, security considerations, and best practices."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "8 min read"
+difficulty: "advanced"
+tags: ["defi", "bridges", "cross-chain", "trading"]
+---
+
+## Why Cross-Chain Trading Matters
+
+Assets and liquidity exist across many blockchains. Your ETH is on Ethereum, but you want to trade on Solana. Your USDC is on Arbitrum, but you need it on Base.
+
+Cross-chain DEXs and bridges solve this by enabling movement and trading across blockchain boundaries.
+
+## Cross-Chain Methods
+
+### Bridges
+
+Transfer assets from one chain to another.
+
+**How bridges work:**
+1. Lock assets on source chain
+2. Mint wrapped version on destination chain
+3. To return: burn wrapped, unlock original
+
+**Example:** Bridge 1 ETH from Ethereum to Arbitrum
+- ETH locked in bridge contract on Ethereum
+- Wrapped ETH minted on Arbitrum
+- You can now use ETH on Arbitrum
+
+### Cross-Chain Swaps
+
+Trade directly across chains in one transaction.
+
+**How it works:**
+1. Submit trade: ETH on Ethereum for SOL on Solana
+2. Protocol coordinates both sides
+3. Receive SOL on Solana, ETH leaves Ethereum
+
+No intermediate wrapped token visible to user.
+
+### Cross-Chain Aggregators
+
+Combine bridging and swapping for optimal routing.
+
+**Example:** Swap USDC (Ethereum) to AVAX (Avalanche)
+1. Aggregator finds best bridge for USDC
+2. Routes to Avalanche
+3. Swaps to AVAX on destination
+4. Single transaction from user perspective
+
+## Major Cross-Chain Protocols
+
+### Layer Zero
+
+Messaging protocol connecting 50+ chains. Powers many bridge and DEX applications.
+
+**Powered by:** Stargate bridge, many cross-chain apps
+
+### Wormhole
+
+Connects Ethereum, Solana, and 20+ other chains.
+
+**Note:** Suffered $320M exploit in 2022, since rebuilt with additional security.
+
+### Across Protocol
+
+Optimistic bridge focused on speed and capital efficiency.
+
+**Strengths:** Fast bridging, competitive fees, strong security model.
+
+### Circle CCTP
+
+Native USDC transfers between supported chains.
+
+**Advantage:** No wrapped tokens, native USDC on each chain.
+
+### Chainlink CCIP
+
+Cross-chain messaging with Chainlink oracle security.
+
+**Use:** Enterprise-grade bridging, slower but more secure.
+
+## Security Considerations
+
+### Bridge Risks
+
+Bridges are high-value targets. Major exploits:
+- Ronin: $600M (2022)
+- Wormhole: $320M (2022)
+- Nomad: $190M (2022)
+
+**Risk factors:**
+- Smart contract vulnerabilities
+- Validator/keeper compromise
+- Oracle manipulation
+- Economic attacks
+
+### Risk Assessment
+
+Before using a bridge:
+
+1. **Check TVL history:** Consistent TVL indicates trust
+2. **Review audits:** Multiple audits from reputable firms
+3. **Understand the model:** How are validators selected?
+4. **Research incidents:** Has it been exploited before?
+
+### Mitigation Strategies
+
+**Use native bridges when possible:** Ethereum to Arbitrum via official bridge is safer than third-party alternatives.
+
+**Limit exposure:** Do not bridge more than you can afford to lose.
+
+**Split large transfers:** Multiple smaller bridges reduce single-point risk.
+
+**Wait for confirmations:** Do not rush; ensure source transaction finalizes.
+
+## Bridging Best Practices
+
+### Pre-Bridge Checklist
+
+- [ ] Verified you are on official bridge URL
+- [ ] Confirmed destination address is correct
+- [ ] Checked bridge fees and time estimates
+- [ ] Ensured you have gas on destination chain
+- [ ] Amount is appropriate for your risk tolerance
+
+### During Bridge
+
+- [ ] Approved only the amount needed
+- [ ] Saved transaction hash
+- [ ] Noted expected completion time
+
+### Post-Bridge
+
+- [ ] Verified receipt on destination chain
+- [ ] Checked received amount matches expectations
+- [ ] Revoked unnecessary approvals
+
+## Cost Comparison
+
+Bridge costs include:
+- Source chain gas
+- Bridge fee (0.05-0.5% typically)
+- Destination chain gas (sometimes covered)
+
+| Route | Typical Cost | Time |
+|-------|--------------|------|
+| Ethereum to Arbitrum (official) | $5-15 | 10 minutes |
+| Ethereum to Arbitrum (Across) | $2-8 | 2-5 minutes |
+| Ethereum to Solana (Wormhole) | $10-30 | 15+ minutes |
+| USDC via CCTP | $3-10 | 20 minutes |
+
+Third-party bridges often cost less but add smart contract risk.
+
+## Cross-Chain DEX Comparison
+
+### ThorChain
+
+Native swaps between BTC, ETH, and other L1s without wrapped tokens.
+
+**Pros:** True native asset support
+**Cons:** Limited pairs, complex technology
+
+### Squid Router
+
+Aggregates bridges and DEXs for cross-chain swaps.
+
+**Pros:** Wide chain support, single interface
+**Cons:** Relies on underlying bridge security
+
+### LI.FI
+
+Bridge and DEX aggregator with multiple route options.
+
+**Pros:** Shows all available routes and costs
+**Cons:** Complexity in choosing optimal path
+
+## Handling Bridging Problems
+
+### Stuck Transactions
+
+If your bridge transaction is pending too long:
+
+1. Check source chain explorer - did transaction confirm?
+2. Check bridge interface for status
+3. Look up transaction in bridge-specific explorer
+4. Contact bridge support if available
+
+### Failed Bridges
+
+If funds appear lost:
+
+1. Verify transaction status on both chains
+2. Check bridge documentation for recovery procedures
+3. Some bridges have manual claim processes
+4. Contact support with transaction hashes
+
+### Wrong Chain
+
+If you bridged to wrong destination:
+
+1. You will need to bridge again to correct chain
+2. Ensure you have gas on the wrong destination
+3. Consider the additional cost before proceeding
+
+## Future of Cross-Chain
+
+### Intent-Based Bridges
+
+Users specify what they want, solvers compete to fulfill.
+
+**Benefits:** Better prices, faster execution, abstracted complexity.
+
+### Chain Abstraction
+
+Wallets that hide chain complexity from users. Trade anywhere, hold anywhere, without managing bridges.
+
+### Shared Sequencing
+
+L2s sharing sequencers enabling atomic cross-rollup transactions.
+
+**Impact:** Near-instant, trustless cross-L2 swaps.
+
+## Summary
+
+Cross-chain trading expands your access to liquidity and opportunities across blockchains. Bridges enable asset movement; cross-chain DEXs enable direct trading.
+
+Security remains the primary concern. Use established bridges, understand their security models, and limit exposure. The convenience of cross-chain access must be balanced against the additional risks introduced.
+
+Compare cross-chain DEX options at [DexRank](/).
