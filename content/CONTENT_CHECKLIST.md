@@ -47,3 +47,9 @@ Use this checklist before publishing any editorial content.
 - [ ] Would a DeFi beginner understand the key points?
 - [ ] Would a DeFi expert find value in the analysis?
 - [ ] Is the overall tone informative, not promotional?
+
+## Related Documents
+
+- [STYLE_GUIDE.md](./STYLE_GUIDE.md) - Voice, tone, structure
+- [CONTENT_UPDATE_SOP.md](./CONTENT_UPDATE_SOP.md) - When and how to update existing content
+- [AI_CONTENT_GUIDELINES.md](./AI_CONTENT_GUIDELINES.md) - Guidelines for AI-assisted content creation
