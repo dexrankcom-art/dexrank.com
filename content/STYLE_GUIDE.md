@@ -11,7 +11,8 @@
 
 ## Forbidden Phrases
 
-These phrases signal AI-generated or low-quality content. Never use:
+These phrases signal AI-generated or low-quality content. Never use them.
+See also: [AI_CONTENT_GUIDELINES.md](./AI_CONTENT_GUIDELINES.md) for detailed anti-slop patterns.
 
 ### Generic Filler
 - "In the ever-evolving world of..."
@@ -98,3 +99,13 @@ When metrics change significantly (>20% TVL change, major version update, securi
 2. Review all specific numbers in the content
 3. Check if "Best for" recommendation still applies
 4. Update any competitive comparisons
+
+For detailed update procedures, see [CONTENT_UPDATE_SOP.md](./CONTENT_UPDATE_SOP.md).
+
+## Related Documents
+
+DexRank's content quality framework includes:
+
+- **[CONTENT_CHECKLIST.md](./CONTENT_CHECKLIST.md)** - Pre-publish checklist for all content
+- **[CONTENT_UPDATE_SOP.md](./CONTENT_UPDATE_SOP.md)** - When and how to update existing content
+- **[AI_CONTENT_GUIDELINES.md](./AI_CONTENT_GUIDELINES.md)** - Guidelines for AI-assisted content creation
