@@ -1,4 +1,6 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { AffiliateDisclosure } from '@/components/ui/affiliate-disclosure';
 import type { ProtocolWithMetrics } from '@/lib/data/types';
 import type { EditorialContent } from '@/lib/content/reviews';
 import { EditorsTake } from './editors-take';
@@ -89,6 +91,20 @@ export function ReviewSections({ protocol, editorial }: ReviewSectionsProps) {
           Editorial verdict coming in Phase 3.
         </p>
       </section>
+
+      {/* Call to Action with Affiliate Disclosure */}
+      {protocol.url && (
+        <section className="border-t pt-8">
+          <AffiliateDisclosure />
+          <div className="flex justify-center">
+            <Button asChild size="lg">
+              <a href={protocol.url} target="_blank" rel="noopener noreferrer">
+                Visit {protocol.name}
+              </a>
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
