@@ -38,44 +38,44 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **REVIEW-01**: Each DEX has a dedicated review page at `/reviews/[dex-slug]`
 - [x] **REVIEW-02**: Review pages display real-time metrics pulled from database
 - [x] **REVIEW-03**: Review pages use consistent templated structure (overview, features, fees, security, pros/cons, verdict)
-- [ ] **REVIEW-04**: Review pages include editorial "Editor's Take" section
+- [x] **REVIEW-04**: Review pages include editorial "Editor's Take" section
 - [x] **REVIEW-05**: Review pages display DexRank score with breakdown
-- [ ] **REVIEW-06**: 30-40 DEX reviews completed at launch
-- [ ] **REVIEW-07**: Review pages have SEO meta tags (title, description, OG tags)
-- [ ] **REVIEW-08**: Review pages have schema markup (JSON-LD Review)
+- [x] **REVIEW-06**: 30-40 DEX reviews completed at launch
+- [x] **REVIEW-07**: Review pages have SEO meta tags (title, description, OG tags)
+- [x] **REVIEW-08**: Review pages have schema markup (JSON-LD Review)
 
 ### Comparison Tool
 
-- [ ] **COMP-01**: User can compare 2 DEXs side-by-side
-- [ ] **COMP-02**: Comparison pages accessible at `/compare/[dex-1]-vs-[dex-2]`
-- [ ] **COMP-03**: Comparison displays feature-by-feature table
-- [ ] **COMP-04**: Comparison displays metrics comparison (TVL, volume, fees)
-- [ ] **COMP-05**: Comparison includes "Best for..." recommendations
-- [ ] **COMP-06**: Comparison pages have SEO meta tags and schema markup
+- [x] **COMP-01**: User can compare 2 DEXs side-by-side
+- [x] **COMP-02**: Comparison pages accessible at `/compare/[dex-1]-vs-[dex-2]`
+- [x] **COMP-03**: Comparison displays feature-by-feature table
+- [x] **COMP-04**: Comparison displays metrics comparison (TVL, volume, fees)
+- [x] **COMP-05**: Comparison includes "Best for..." recommendations
+- [x] **COMP-06**: Comparison pages have SEO meta tags and schema markup
 
 ### Chain-Specific Pages
 
-- [ ] **CHAIN-01**: Each major chain has a dedicated page at `/chains/[chain-slug]`
-- [ ] **CHAIN-02**: Chain pages list top DEXs available on that chain
-- [ ] **CHAIN-03**: Chain pages include chain-specific context (ecosystem overview)
-- [ ] **CHAIN-04**: Chain pages have SEO meta tags
-- [ ] **CHAIN-05**: Minimum 10 chain pages at launch (Ethereum, Solana, Arbitrum, Base, BSC, Polygon, Optimism, Avalanche, zkSync, Fantom)
+- [x] **CHAIN-01**: Each major chain has a dedicated page at `/chains/[chain-slug]`
+- [x] **CHAIN-02**: Chain pages list top DEXs available on that chain
+- [x] **CHAIN-03**: Chain pages include chain-specific context (ecosystem overview)
+- [x] **CHAIN-04**: Chain pages have SEO meta tags
+- [x] **CHAIN-05**: Minimum 10 chain pages at launch (Ethereum, Solana, Arbitrum, Base, BSC, Polygon, Optimism, Avalanche, zkSync, Fantom)
 
 ### Educational Guides
 
-- [ ] **GUIDE-01**: Guides accessible at `/guides/[guide-slug]`
-- [ ] **GUIDE-02**: "What is a DEX?" guide explaining decentralized exchanges
-- [ ] **GUIDE-03**: "DEX vs CEX" comparison guide
-- [ ] **GUIDE-04**: "How to use a DEX" beginner guide
-- [ ] **GUIDE-05**: "Liquidity pools explained" guide
-- [ ] **GUIDE-06**: "Impermanent loss" guide for liquidity providers
-- [ ] **GUIDE-07**: Guides have SEO meta tags and internal linking
+- [x] **GUIDE-01**: Guides accessible at `/guides/[guide-slug]`
+- [x] **GUIDE-02**: "What is a DEX?" guide explaining decentralized exchanges
+- [x] **GUIDE-03**: "DEX vs CEX" comparison guide
+- [x] **GUIDE-04**: "How to use a DEX" beginner guide
+- [x] **GUIDE-05**: "Liquidity pools explained" guide
+- [x] **GUIDE-06**: "Impermanent loss" guide for liquidity providers
+- [x] **GUIDE-07**: Guides have SEO meta tags and internal linking
 
 ### Methodology & Trust
 
-- [ ] **METH-01**: "How We Rank" page at `/how-we-rank` explains ranking algorithm
-- [ ] **METH-02**: Methodology page shows weight distribution for each factor
-- [ ] **METH-03**: Methodology page is linked from homepage and rankings
+- [x] **METH-01**: "How We Rank" page at `/how-we-rank` explains ranking algorithm
+- [x] **METH-02**: Methodology page shows weight distribution for each factor
+- [x] **METH-03**: Methodology page is linked from homepage and rankings
 
 ### Technical & SEO
 
