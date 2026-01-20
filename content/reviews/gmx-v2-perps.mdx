@@ -1,0 +1,25 @@
+---
+title: GMX V2 Perps Review
+tier: 1
+editorsTake: "GMX V2 Perps holds approximately $418M in TVL, operating primarily on Arbitrum with expansion to other chains. GMX pioneered the GLP model for perpetual DEXs - where liquidity providers deposit into a multi-asset pool that serves as counterparty to all trades - and V2 refines this approach with isolated pools and improved capital efficiency.
+
+The platform offers perpetual contracts with up to 100x leverage on major pairs. V2 introduced GM tokens (replacing GLP), allowing liquidity provision to specific markets rather than a general pool. This means LPs can choose exposure - providing liquidity only to BTC-USD rather than a basket of assets. Current GM pool APYs range from 15-40% depending on the market and trading activity.
+
+GMX's execution model uses Chainlink oracles for pricing, eliminating slippage on the oracle price but introducing oracle dependency. This zero-slippage model is particularly attractive for large trades that would face significant impact on order book DEXs. A $1M position can be opened at the oracle price, which is impossible on most venues.
+
+The tradeoffs involve the oracle model's limitations. While zero slippage sounds ideal, it can work against traders during rapid price movements - the oracle price may lag spot market prices, creating temporary arbitrage opportunities that LPs benefit from. Additionally, GM token LPs face impermanent loss-like risk if traders consistently profit on a particular market.
+
+GMX's fee structure is transparent but not cheap. Opening and closing positions incurs a 0.05-0.1% fee (depending on whether you're increasing or decreasing open interest), plus borrowing fees that accumulate over time. For active traders making frequent position adjustments, these fees compound meaningfully."
+pros:
+  - "Zero slippage on oracle price enables large trades without impact"
+  - "GM tokens allow targeted liquidity provision to specific markets"
+  - "Up to 100x leverage on major pairs"
+  - "Battle-tested on Arbitrum with years of operational history"
+cons:
+  - "Oracle lag can create adverse execution during volatile periods"
+  - "Fee structure (0.05-0.1% + borrowing) adds up for active traders"
+  - "GM LPs face directional risk if traders consistently profit"
+  - "Concentrated on Arbitrum limits cross-chain accessibility"
+bestFor: "Traders executing larger positions ($10K+) who benefit from zero slippage, and LPs who want targeted exposure to specific market liquidity provision rather than a general pool."
+lastUpdated: "January 2026"
+---

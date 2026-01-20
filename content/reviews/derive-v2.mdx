@@ -1,0 +1,25 @@
+---
+title: Derive V2 Review
+tier: 1
+editorsTake: "Derive V2 operates with approximately $88M in TVL, offering a comprehensive derivatives platform that goes beyond perpetuals to include options trading. Built on Arbitrum and other chains, Derive (formerly Lyra) has established itself as one of the few venues offering both perpetuals and options in a unified interface.
+
+The platform's distinguishing feature is its options trading functionality. While most perpetual DEXs focus exclusively on perpetual contracts, Derive provides European-style options on major assets. This enables more sophisticated trading strategies - covered calls, protective puts, straddles - that aren't possible on perp-only platforms. Options liquidity comes from the Derive Market Maker (DMM) vault, which algorithmically prices and provides liquidity.
+
+For perpetual trading, Derive uses an oracle-based model similar to GMX, with leverages up to 50x on major pairs. The integration of options and perps means traders can construct complex positions - for example, a perpetual position hedged with put options - in a single venue rather than managing across multiple protocols.
+
+The options market introduces unique considerations. Option pricing in DeFi is complex, and the DMM vault takes on significant risk in pricing and hedging these instruments. Historical DMM performance has been positive but volatile, reflecting the challenges of market-making options. Additionally, options liquidity is concentrated in a few major assets; exotic underlyings have limited or no options available.
+
+The learning curve for Derive is steeper than pure perpetual platforms. Understanding options Greeks, expiration mechanics, and optimal strategy construction requires more sophistication. For traders who only want simple leveraged exposure, this complexity may be unnecessary overhead."
+pros:
+  - "Combined perpetuals and options in single platform"
+  - "Enables sophisticated strategies (spreads, straddles, hedged perps)"
+  - "Established options pricing with DMM vault"
+  - "Available on Arbitrum with reasonable fees"
+cons:
+  - "Steeper learning curve due to options complexity"
+  - "Options liquidity concentrated in major assets only"
+  - "DMM vault performance can be volatile"
+  - "Lower perp leverage (50x) than some competitors"
+bestFor: "Sophisticated traders who want to combine perpetual positions with options strategies for hedging or enhanced returns, and have the knowledge to construct and manage these positions."
+lastUpdated: "January 2026"
+---
