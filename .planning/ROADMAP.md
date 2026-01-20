@@ -120,14 +120,16 @@ Plans:
   9. Data freshness visible to users (last updated timestamps)
   10. Affiliate disclaimer compliant with FTC requirements
   11. Content quality framework in place (style guide, review checklist, SOP)
-**Plans**: TBD (to be created by /gsd:plan-phase)
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md — Error resilience and monitoring (error boundaries, 404 page, Sentry, Web Vitals) (Wave 1)
+- [ ] 05-02-PLAN.md — Navigation and SEO (breadcrumbs with JSON-LD, canonical URLs) (Wave 1)
+- [ ] 05-03-PLAN.md — UI polish and compliance (timestamps, affiliate disclosure, accessibility linting) (Wave 2)
+- [ ] 05-04-PLAN.md — Content quality framework (Update SOP, AI content guidelines) (Wave 1)
 
 *Note: Original Phase 5 (Data Enhancements - historical charts, security indicators) moved to v2 milestone.*
+*Note: JSON-LD structured data and methodology link already complete from Phase 3.*
 
 ## Progress
 
@@ -140,7 +142,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
 | 3. Content & Differentiation | 7/7 | Complete | 2026-01-20 |
 | 4. Production & Polish | 7/7 | Complete | 2026-01-20 |
-| 5. Quality & Production Readiness | 0/? | Not started | - |
+| 5. Quality & Production Readiness | 0/4 | Planned | - |
 
 ---
 
@@ -202,6 +204,7 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Phase 3 complete: 2026-01-20*
 *Phase 4 planned: 2026-01-20*
 *Phase 4 complete: 2026-01-20*
+*Phase 5 planned: 2026-01-20 (4 plans in 2 waves)*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*
 *Phase 5 replaced: 2026-01-20 (Data Enhancements → Quality & Production Readiness, 17 todos)*
