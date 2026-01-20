@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { StaggerRows } from '@/components/animated/stagger-rows';
 import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
@@ -43,7 +44,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border">
+    <StaggerRows className="rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -69,7 +70,7 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="hover-lift">
+              <TableRow key={row.id} data-row className="hover-lift">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
@@ -97,6 +98,6 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-    </div>
+    </StaggerRows>
   );
 }
