@@ -1,0 +1,21 @@
+---
+title: Contango V2 Review
+tier: 2
+editorsTake: "Contango V2 operates with approximately $16M TVL, offering leveraged trading through money market looping rather than traditional perpetual contracts. The protocol automates the process of depositing collateral, borrowing against it, and recursively leveraging to achieve target exposure.
+
+This model differs from perpetuals in important ways. Positions are backed by actual borrowed assets from lending protocols like Aave or Compound, not synthetic exposure. The cost of leverage is the borrowing rate rather than funding rates. During periods when borrow rates are lower than perp funding, Contango can be cheaper.
+
+Contango supports leveraged positions across multiple lending protocols and chains. Users can create leveraged ETH exposure on Aave V3 on Arbitrum or Compound on Mainnet through the same interface. This aggregation simplifies what would otherwise require manual transactions across multiple protocols.
+
+The complexity is that money market leverage behaves differently than perpetuals. Liquidation thresholds, variable borrow rates, and protocol-specific risks all apply. Users unfamiliar with lending protocol mechanics face a learning curve before Contango's advantages become accessible."
+pros:
+  - "Leveraged exposure through real borrowing, not synthetics"
+  - "Can be cheaper than perpetuals when borrow rates are low"
+  - "Aggregates multiple lending protocols and chains"
+cons:
+  - "Steeper learning curve than traditional perps"
+  - "Variable borrow rates affect position costs"
+  - "Exposed to lending protocol risks"
+bestFor: "DeFi-native traders familiar with lending protocols who want leveraged exposure through actual borrowing rather than synthetic positions."
+lastUpdated: "January 2026"
+---
