@@ -1,6 +1,9 @@
+'use client';
+
 import { TrendingUp, TrendingDown, Activity, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ProtocolMetric } from '@/lib/data/types';
+import { CountUp, formatCompactNumber } from '@/components/animated/count-up';
 
 interface MetricsGridProps {
   metrics: ProtocolMetric | null;
@@ -23,19 +26,31 @@ function formatChange(value: number | null): { text: string; isPositive: boolean
 
 interface MetricCardProps {
   label: string;
-  value: string;
+  /** Raw numeric value for animation, or null for no data */
+  rawValue: number | null;
   change?: { text: string; isPositive: boolean } | null;
   icon: React.ReactNode;
 }
 
-function MetricCard({ label, value, change, icon }: MetricCardProps) {
+function MetricCard({ label, rawValue, change, icon }: MetricCardProps) {
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="rounded-lg border bg-card p-4 hover-lift">
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
         {icon}
         {label}
       </div>
-      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-2xl font-bold">
+        {rawValue !== null && rawValue !== undefined ? (
+          <CountUp
+            end={rawValue}
+            prefix="$"
+            formatter={formatCompactNumber}
+            duration={800}
+          />
+        ) : (
+          '-'
+        )}
+      </div>
       {change && (
         <div
           className={cn(
@@ -68,25 +83,25 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <MetricCard
         label="Total Value Locked"
-        value={formatCurrency(metrics.tvl)}
+        rawValue={metrics.tvl}
         change={formatChange(metrics.tvlChange1d)}
         icon={<DollarSign className="h-4 w-4" />}
       />
       <MetricCard
         label="24h Volume"
-        value={formatCurrency(metrics.volume24h)}
+        rawValue={metrics.volume24h}
         change={formatChange(metrics.volumeChange1d)}
         icon={<Activity className="h-4 w-4" />}
       />
       <MetricCard
         label="7d Volume"
-        value={formatCurrency(metrics.volume7d)}
+        rawValue={metrics.volume7d}
         change={formatChange(metrics.volumeChange7d)}
         icon={<Activity className="h-4 w-4" />}
       />
       <MetricCard
         label="30d Volume"
-        value={formatCurrency(metrics.volume30d)}
+        rawValue={metrics.volume30d}
         icon={<Activity className="h-4 w-4" />}
       />
     </div>
