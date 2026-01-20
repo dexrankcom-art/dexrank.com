@@ -6,6 +6,7 @@ import {
   protocolMetrics,
 } from '@/db/schema';
 import { eq, desc, asc, sql, ilike, and, inArray } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 import type {
   ProtocolWithMetrics,
   ProtocolListItem,
@@ -310,18 +311,38 @@ export async function getProtocolsWithRanking(
 
 /**
  * Get all protocol slugs for static generation
+ * Cached during build to avoid redundant queries
  */
-export async function getAllProtocolSlugs(): Promise<string[]> {
-  const results = await db
-    .select({ slug: protocols.slug })
-    .from(protocols);
+export const getAllProtocolSlugs = unstable_cache(
+  async (): Promise<string[]> => {
+    const results = await db
+      .select({ slug: protocols.slug })
+      .from(protocols);
 
-  return results.map((r) => r.slug);
-}
+    return results.map((r) => r.slug);
+  },
+  ['all-protocol-slugs'],
+  { revalidate: 3600 } // 1 hour cache
+);
+
+/**
+ * Get all protocols with ranking data - CACHED
+ * This is the expensive operation that fetches all protocols for ranking calculation.
+ * Cached during build so all 1600+ review pages share the same data.
+ */
+const getAllRankedProtocolsCached = unstable_cache(
+  async (): Promise<RankedProtocol[]> => {
+    const allProtocols = await getProtocols({ limit: 10000 }, 'tvl', 'desc');
+    return calculateDexRankScores(allProtocols);
+  },
+  ['all-ranked-protocols'],
+  { revalidate: 3600 } // 1 hour cache - matches ISR revalidation
+);
 
 /**
  * Get single protocol with ranking score
- * Calculates ranking in context of all protocols for accurate percentile
+ * Calculates ranking in context of all protocols for accurate percentile.
+ * Uses cached ranking data to avoid fetching all protocols for every page.
  */
 export async function getProtocolBySlugWithRanking(
   slug: string
@@ -330,11 +351,9 @@ export async function getProtocolBySlugWithRanking(
   const protocol = await getProtocolBySlug(slug);
   if (!protocol) return null;
 
-  // Get all protocols to calculate ranking context
-  const allProtocols = await getProtocols({ limit: 10000 }, 'tvl', 'desc');
-
-  // Calculate scores for all protocols
-  const rankedProtocols = calculateDexRankScores(allProtocols);
+  // Get cached ranked protocols (this is the key optimization!)
+  // During build, this single DB query result is reused across all 1600+ pages
+  const rankedProtocols = await getAllRankedProtocolsCached();
 
   // Find this protocol in ranked list
   const rankedProtocol = rankedProtocols.find((p) => p.slug === slug);

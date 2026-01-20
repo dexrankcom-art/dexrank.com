@@ -1,6 +1,7 @@
 import { db } from '@/db';
 import { chains, protocolChains, protocols, protocolMetrics } from '@/db/schema';
 import { sql, eq, inArray, desc } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 import type { Chain } from './types';
 
 /**
@@ -41,14 +42,19 @@ export async function getChainBySlug(slug: string): Promise<Chain | null> {
 
 /**
  * Get all chain slugs for static generation
+ * Cached during build to avoid redundant queries
  */
-export async function getAllChainSlugs(): Promise<string[]> {
-  const results = await db
-    .select({ slug: chains.slug })
-    .from(chains);
+export const getAllChainSlugs = unstable_cache(
+  async (): Promise<string[]> => {
+    const results = await db
+      .select({ slug: chains.slug })
+      .from(chains);
 
-  return results.map((r) => r.slug);
-}
+    return results.map((r) => r.slug);
+  },
+  ['all-chain-slugs'],
+  { revalidate: 3600 } // 1 hour cache
+);
 
 /**
  * Get protocol count for a specific chain

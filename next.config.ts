@@ -4,6 +4,9 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // Increase timeout for static page generation (default is 60s)
+  // With 1800+ pages, need extra time even with caching
+  staticPageGenerationTimeout: 300, // 5 minutes
 };
 
 const withMDX = createMDX({
