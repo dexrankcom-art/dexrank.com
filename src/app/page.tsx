@@ -5,6 +5,7 @@ import { DataTable } from '@/components/rankings/data-table';
 import { TableToolbar } from '@/components/rankings/table-toolbar';
 import { columns } from '@/components/rankings/columns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ThemeToggle } from '@/components/theme-toggle';
 import type { SortOrder, ProtocolSortField } from '@/lib/data/types';
 
 // Revalidate every 5 minutes for fresh data
@@ -57,14 +58,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <main className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">DEX Rankings</h1>
-        <p className="text-muted-foreground mt-2">
-          Compare decentralized exchanges by DexRank score, TVL, and trading volume.{' '}
-          <Link href="/how-we-rank" className="text-primary hover:underline">
-            Learn how we rank
-          </Link>
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">DEX Rankings</h1>
+          <p className="text-muted-foreground mt-2">
+            Compare decentralized exchanges by DexRank score, TVL, and trading volume.{' '}
+            <Link href="/how-we-rank" className="text-primary hover:underline">
+              Learn how we rank
+            </Link>
+          </p>
+        </div>
+        <ThemeToggle />
       </div>
 
       <Suspense fallback={<TableSkeleton />}>
