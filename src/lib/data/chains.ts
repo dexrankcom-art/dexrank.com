@@ -51,6 +51,21 @@ export async function getAllChainSlugs(): Promise<string[]> {
 }
 
 /**
+ * Get protocol count for a specific chain
+ */
+export async function getProtocolCountByChain(chainSlug: string): Promise<number> {
+  const chain = await getChainBySlug(chainSlug);
+  if (!chain) return 0;
+
+  const [result] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(protocolChains)
+    .where(eq(protocolChains.chainId, chain.id));
+
+  return result?.count || 0;
+}
+
+/**
  * Get protocols for a specific chain with ranking
  * Returns protocols sorted by TVL descending
  */
