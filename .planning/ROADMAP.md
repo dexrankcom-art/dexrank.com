@@ -64,14 +64,16 @@ Plans:
   4. User can read educational guides explaining DEX concepts (16 guides)
   5. User can view "How We Rank" page explaining the ranking methodology
   6. Category pages live for all 7 DEX types (spot, perp, aggregator, cross-chain, options, prediction, yield)
-**Plans**: TBD
+**Plans**: 7 plans in 3 waves
 
 Plans:
-- [ ] 03-01: Editorial content system
-- [ ] 03-02: DEX comparison tool
-- [ ] 03-03: Chain-specific pages
-- [ ] 03-04: Educational guides
-- [ ] 03-05: Methodology page
+- [ ] 03-01-PLAN.md — MDX content infrastructure and JSON-LD schema system (Wave 1)
+- [ ] 03-02-PLAN.md — Editor's Take editorial content for review pages (Wave 2)
+- [ ] 03-03-PLAN.md — DEX comparison tool at /compare/[slugs] (Wave 2)
+- [ ] 03-04-PLAN.md — Chain-specific pages at /chains/[slug] (Wave 2)
+- [ ] 03-05-PLAN.md — Category pages for 7 DEX types (Wave 3)
+- [ ] 03-06-PLAN.md — Educational guides at /guides/[slug] (Wave 3)
+- [ ] 03-07-PLAN.md — Methodology page at /how-we-rank (Wave 3)
 
 ### Phase 4: Production & Polish
 **Goal**: Production-ready site with performant 2026-style animations, SEO optimization, Core Web Vitals passing, and modern UI polish with zero-lag interactions.
@@ -129,7 +131,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
 | 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
-| 3. Content & Differentiation | 0/5 | Not started | - |
+| 3. Content & Differentiation | 0/7 | Planned | - |
 | 4. Production & Polish | 0/7 | Not started | - |
 | 5. Data Enhancements | 0/3 | Not started | - |
 
@@ -181,5 +183,6 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Sitemap expanded to 500 DEXs: 2026-01-20*
 *Animation system added to Phase 4: 2026-01-20*
 *Phase 5 added (data enhancements): 2026-01-20*
+*Phase 3 planned: 2026-01-20*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*
