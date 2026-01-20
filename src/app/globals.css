@@ -123,3 +123,118 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================
+   ANIMATION KEYFRAMES - GPU Accelerated Only
+   All animations use transform/opacity for 60fps
+   ============================================ */
+
+/* Shimmer for skeleton loading states */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Fade in with subtle vertical movement */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in without movement (for reduced motion fallback) */
+@keyframes fade-in-simple {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale pulse for live indicators */
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Utility classes for animations */
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.animate-fade-in-simple {
+  animation: fade-in-simple 0.15s ease-out forwards;
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s ease-in-out infinite;
+}
+
+/* Hover state utilities - GPU accelerated */
+.hover-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Press feedback for buttons/interactive elements */
+.press-feedback {
+  transition: transform 0.1s ease;
+}
+
+.press-feedback:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   REDUCED MOTION - Accessibility
+   Respects user's system preference
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-shimmer,
+  .animate-fade-in,
+  .animate-pulse-scale {
+    animation: none !important;
+  }
+
+  .hover-lift:hover {
+    transform: none;
+  }
+}
