@@ -1,0 +1,205 @@
+---
+title: "Liquidity Pools Explained: How DEX Trading Works"
+description: "Understand how liquidity pools power decentralized exchanges. Learn about LPs, AMMs, trading pairs, and how fees are distributed to providers."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "9 min read"
+difficulty: "beginner"
+tags: ["defi", "liquidity", "amm", "lp"]
+---
+
+## What is a Liquidity Pool?
+
+A **liquidity pool** is a smart contract holding a reserve of two or more tokens that traders can swap between. Instead of matching buyers and sellers directly, DEXs use these pools to enable trading at any time.
+
+Picture a pool holding $5 million worth of ETH and $5 million worth of USDC. When you want to buy ETH, you deposit USDC into the pool and withdraw ETH. The pool always has funds available, no counterparty needed.
+
+This model, called **automated market making (AMM)**, replaced traditional order books on most DEXs and enabled DeFi trading to scale from thousands to billions in daily volume.
+
+## How Liquidity Pools Enable Trading
+
+### The Constant Product Formula
+
+Most AMM pools use the formula: x * y = k
+
+Where:
+- x = quantity of token A in the pool
+- y = quantity of token B in the pool
+- k = a constant that must remain unchanged
+
+When you trade, you change x and y, but k stays the same. This creates automatic price adjustment.
+
+**Example:**
+A pool has 100 ETH and 200,000 USDC.
+- k = 100 * 200,000 = 20,000,000
+
+You want to buy 1 ETH.
+- After: pool must have 99 ETH
+- New USDC = 20,000,000 / 99 = 202,020 USDC
+- You pay: 202,020 - 200,000 = 2,020 USDC for 1 ETH
+
+The price increased from 2,000 USDC per ETH to 2,020 USDC. Larger trades move the price more significantly.
+
+### Price Discovery
+
+Pool prices adjust based on supply and demand. If many people buy ETH from the pool, ETH becomes scarcer relative to USDC, and the price rises. If they sell ETH back, the price falls.
+
+Arbitrageurs keep pool prices aligned with external markets. If Uniswap prices ETH at $2,000 while Coinbase prices it at $2,050, traders buy cheap ETH on Uniswap and sell on Coinbase until prices converge.
+
+## Becoming a Liquidity Provider
+
+Anyone can deposit tokens into a pool and earn trading fees. This is called **liquidity providing** or **LPing**.
+
+### How It Works
+
+1. You deposit equal value of both tokens (e.g., $1,000 ETH + $1,000 USDC)
+2. The pool mints LP tokens representing your share
+3. Traders swap through the pool, paying fees (typically 0.3%)
+4. Fees accumulate in the pool, increasing the value of LP tokens
+5. When you withdraw, you burn LP tokens and receive your share of the pool
+
+### Example Returns
+
+Pool: ETH/USDC with $10 million TVL and 0.3% fee
+Your deposit: $10,000 (0.1% of pool)
+Daily trading volume: $2 million
+Daily fees: $2,000,000 * 0.003 = $6,000
+Your daily share: $6,000 * 0.001 = $6
+Annualized: approximately 22% APY (if volume stays constant)
+
+Actual returns vary based on trading activity. High-volume pools in volatile markets generate more fees but also carry more risk.
+
+### LP Token Mechanics
+
+LP tokens are transferable ERC-20 tokens. You can:
+- Hold them to accumulate fees
+- Stake them in farm contracts for additional rewards
+- Use them as collateral in lending protocols
+- Transfer them to other wallets
+
+Your position grows as fees accumulate. Even without touching your LP tokens, the underlying value increases with each trade.
+
+## Understanding Pool Composition
+
+### Trading Pairs
+
+Most pools contain exactly two tokens. Popular pairs include:
+- ETH/USDC (trade ETH against stable dollar)
+- ETH/WBTC (trade ETH against wrapped Bitcoin)
+- USDC/DAI (trade between stablecoins)
+
+Some DEXs support multi-token pools. Balancer allows up to 8 tokens in a single pool with custom weightings.
+
+### Pool Ratios
+
+In a standard 50/50 pool, you must deposit equal dollar values of each token. If ETH is $2,000:
+- Depositing 1 ETH requires also depositing 2,000 USDC
+- Your position maintains a 50/50 split by value
+
+This ratio changes as prices move, which leads to impermanent loss (explained below).
+
+### Pool Depth and Slippage
+
+**Total Value Locked (TVL)** measures the total value of tokens in a pool. Higher TVL means:
+- Less price impact per trade (lower slippage)
+- More stable prices
+- Better experience for traders
+
+A $100 million pool can absorb a $10,000 trade with minimal impact. A $100,000 pool would see significant price movement from the same trade.
+
+## Fee Structures
+
+### Trading Fees
+
+Standard fee tiers across major DEXs:
+
+| Fee Tier | Use Case |
+|----------|----------|
+| 0.01% | Stablecoin pairs (USDC/USDT) |
+| 0.05% | Similar assets (ETH/stETH) |
+| 0.3% | Standard pairs (ETH/USDC) |
+| 1% | Exotic or volatile pairs |
+
+Lower fees attract more volume but reduce earnings per trade. Higher fees generate more per trade but may drive volume to competitors.
+
+### Fee Distribution
+
+100% of trading fees go to liquidity providers in proportion to their pool share. No platform takes a cut in most standard AMM pools.
+
+Some protocols (like Uniswap) have governance-controlled fee switches that could redirect a portion to token holders, but these are typically not activated.
+
+### Protocol Incentives
+
+Many pools offer additional rewards beyond trading fees:
+- Governance token emissions (UNI, SUSHI, CRV)
+- Partner protocol incentives
+- Bonus programs for specific pairs
+
+These rewards often constitute the majority of LP returns, especially for newer protocols trying to attract liquidity.
+
+## Risks of Providing Liquidity
+
+### Impermanent Loss
+
+The most significant risk. When the price ratio between your deposited tokens changes, you end up with less value than if you had simply held the tokens.
+
+Called "impermanent" because the loss reverses if prices return to your entry ratio. It becomes permanent when you withdraw at a different ratio.
+
+A 50% price move (say ETH doubles while USDC stays constant) results in approximately 5.7% impermanent loss. A 200% move causes approximately 25% loss.
+
+Read more in our dedicated guide: [Impermanent Loss Explained](/guides/impermanent-loss)
+
+### Smart Contract Risk
+
+Your tokens sit in a smart contract. If that contract has a bug or gets exploited, funds can be lost. Major DEXs undergo extensive audits, but risk remains.
+
+### Market Risk
+
+If one token in your pair crashes to zero, you end up holding mostly that worthless token. LP positions cannot exit before prices collapse since there is no stop-loss.
+
+### Oracle and MEV Risk
+
+Some pools rely on price oracles which can be manipulated. Additionally, MEV (Maximal Extractable Value) bots can sandwich your deposits and withdrawals, extracting value from your transactions.
+
+## Types of Liquidity Pools
+
+### Constant Product Pools (Uniswap v2 style)
+
+The standard x * y = k model. Simple, battle-tested, works for any token pair. Liquidity spread evenly across all prices.
+
+### Concentrated Liquidity (Uniswap v3)
+
+LPs choose a price range to provide liquidity. Capital efficiency increases dramatically within the chosen range, but you earn nothing outside it and face higher impermanent loss risk.
+
+### Stable Pools (Curve)
+
+Modified formula optimized for tokens that should trade near 1:1 (stablecoins, wrapped assets). Lower slippage for stable swaps, not suitable for volatile pairs.
+
+### Weighted Pools (Balancer)
+
+Pools with non-50/50 ratios, like 80/20 ETH/USDC. Reduces impermanent loss exposure to one asset at the cost of capital efficiency.
+
+## Getting Started as an LP
+
+If you want to provide liquidity:
+
+1. **Start small**: Test with an amount you can afford to lose
+2. **Choose stable pairs**: USDC/DAI has minimal impermanent loss risk
+3. **Research the pool**: Check TVL, volume, and historical returns
+4. **Understand the math**: Calculate potential impermanent loss for your entry
+5. **Monitor your position**: Track fees earned versus IL over time
+
+Use tools like:
+- DeFiLlama for pool data and APY comparisons
+- Revert.finance for Uniswap v3 position analytics
+- Pool-specific dashboards on each DEX
+
+## Summary
+
+Liquidity pools are the foundation of DEX trading. They hold token reserves that enable swapping without order books, using mathematical formulas to determine prices automatically.
+
+As an LP, you earn trading fees proportional to your pool share. Returns depend on trading volume, fee tier, and time in the pool. Risks include impermanent loss, smart contract vulnerabilities, and market downturns.
+
+Understanding liquidity pools is essential for participating in DeFi beyond simple swaps. Whether you want to earn yield or simply understand how your trades execute, this knowledge forms the basis for more advanced strategies.
+
+Explore liquidity pool data for top DEXs at [DexRank](/).

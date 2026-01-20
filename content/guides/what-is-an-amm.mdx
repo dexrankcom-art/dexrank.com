@@ -1,0 +1,232 @@
+---
+title: "What is an AMM? Automated Market Makers Explained"
+description: "Understand how automated market makers power DEX trading. Learn about AMM formulas, pool mechanics, and different AMM models used in DeFi."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "9 min read"
+difficulty: "beginner"
+tags: ["defi", "amm", "dex", "trading"]
+---
+
+## What is an Automated Market Maker?
+
+An **automated market maker (AMM)** is a smart contract that provides liquidity for trades without traditional buyers and sellers. Instead of matching orders, AMMs use mathematical formulas to determine prices based on the ratio of tokens in a pool.
+
+Before AMMs, decentralized trading required order books where users had to find counterparties. AMMs solved this by letting anyone trade instantly against a pool of tokens. This innovation made DEXs practical and sparked the DeFi explosion of 2020.
+
+Today, AMMs process billions in daily volume across hundreds of protocols. Understanding how they work is essential for anyone using or building in DeFi.
+
+## How Traditional Exchanges Work
+
+On a traditional exchange (like the NYSE or Coinbase), trading uses an **order book**:
+
+1. Buyers post bids: "I will buy 1 ETH at $2,000"
+2. Sellers post asks: "I will sell 1 ETH at $2,010"
+3. When a bid meets an ask, a trade executes
+4. Market makers provide liquidity by posting both bids and asks
+
+This requires:
+- Active participants on both sides
+- Sufficient order depth
+- Fast matching engines
+- Market makers with capital and algorithms
+
+On-chain order books are expensive because every order submission, cancellation, and update costs gas. They work poorly with blockchain latency and throughput limits.
+
+## How AMMs Solve This
+
+AMMs replace order books with **liquidity pools** governed by mathematical formulas:
+
+1. Liquidity providers deposit token pairs into pools
+2. A formula (like x * y = k) determines the exchange rate
+3. Traders swap against the pool at the formula-determined price
+4. The price adjusts automatically based on supply and demand
+5. No order matching, no waiting for counterparties
+
+This is simpler, always available, and works without professional market makers. Anyone can provide liquidity; anyone can trade.
+
+## The Constant Product Formula
+
+Most AMMs use the **constant product** formula, invented by Uniswap:
+
+**x * y = k**
+
+Where:
+- x = quantity of token A
+- y = quantity of token B
+- k = a constant that must remain unchanged after trades
+
+### How Prices Are Determined
+
+If a pool has 100 ETH and 200,000 USDC:
+- k = 100 * 200,000 = 20,000,000
+- Price of ETH = 200,000 / 100 = 2,000 USDC
+
+When you buy 1 ETH:
+- Pool must maintain k = 20,000,000
+- New ETH: 99
+- New USDC: 20,000,000 / 99 = 202,020
+- You pay: 202,020 - 200,000 = 2,020 USDC
+- Effective price: 2,020 USDC per ETH
+
+The price rose from 2,000 to 2,040 (after the trade) because ETH became scarcer in the pool.
+
+### The Bonding Curve
+
+The constant product formula creates a **bonding curve**: a graphical representation of all possible pool states.
+
+As you buy token A:
+- A becomes scarcer, its price increases
+- B becomes more abundant, its price decreases
+- The curve ensures the pool never runs out of either token (prices go to infinity as either approaches zero)
+
+This elegantly solves the liquidity problem. No matter how much you want to trade, the pool always has a price, though extremely large trades face extreme slippage.
+
+## Price Impact and Slippage
+
+**Price impact** measures how much your trade moves the market price. Larger trades relative to pool size create more impact.
+
+**Slippage** is the difference between the expected price and the execution price.
+
+Example with $1 million pool:
+- $1,000 trade: 0.1% price impact
+- $10,000 trade: 1% price impact
+- $100,000 trade: 10% price impact
+
+High TVL pools handle large trades with minimal slippage. Low TVL pools are only suitable for small trades.
+
+## Liquidity Provider Mechanics
+
+### Depositing
+
+To add liquidity to an x * y = k pool:
+1. Deposit equal dollar values of both tokens
+2. Receive LP tokens representing your share
+3. Example: depositing $5,000 ETH + $5,000 USDC into a $100,000 pool gives you 10% of LP tokens
+
+### Earning Fees
+
+Every trade pays a fee (typically 0.3%) that stays in the pool:
+- Fee adds to token reserves
+- LP token value increases proportionally
+- Your share grows without additional deposits
+
+If a $100,000 pool does $10,000 daily volume:
+- Daily fees: $10,000 * 0.3% = $30
+- Your 10% share earns: $3/day
+
+### Withdrawing
+
+When you remove liquidity:
+1. Burn LP tokens
+2. Receive your proportion of both tokens
+3. The ratio may differ from when you deposited (impermanent loss)
+
+## Different AMM Models
+
+### Constant Product (Uniswap v1/v2)
+
+The original model described above. Simple, works for any token pair, but capital efficiency is low because liquidity spreads across all possible prices.
+
+**Pros**: Simple, battle-tested, works for volatile pairs
+**Cons**: High slippage for large trades, poor capital efficiency
+
+### Concentrated Liquidity (Uniswap v3)
+
+LPs choose a price range to provide liquidity. Within that range, capital is used efficiently. Outside, the position earns nothing.
+
+**Example**: Instead of providing liquidity from $0 to infinity, an LP provides only between $1,900-$2,100 for ETH/USDC.
+
+**Pros**: 4000x capital efficiency in tight ranges
+**Cons**: Requires active management, higher IL in narrow ranges
+
+### Stable Pools (Curve)
+
+Optimized formula for assets that should trade near 1:1 (stablecoins, wrapped tokens). The curve is flatter near the target price, reducing slippage dramatically.
+
+**Pros**: Ultra-low slippage for stable swaps
+**Cons**: Only works for pegged assets, poor for volatile pairs
+
+### Weighted Pools (Balancer)
+
+Pools can have custom ratios (80/20, 60/20/20) instead of just 50/50. Reduces exposure to one asset, changes IL dynamics.
+
+**Pros**: Customizable exposure, multi-asset pools
+**Cons**: More complex math, less intuitive
+
+### Hybrid Models (Curve v2, Maverick)
+
+Combine concentrated liquidity with dynamic parameters. The pool adjusts its curve based on recent trading patterns.
+
+**Pros**: Adapts to market conditions automatically
+**Cons**: Complex, newer and less tested
+
+## AMM Innovations
+
+### Virtual Reserves
+
+Some AMMs use virtual reserves to improve capital efficiency. Tokens may not all be in the pool simultaneously; smart contracts calculate as if they were.
+
+### Dynamic Fees
+
+Instead of fixed 0.3%, some AMMs adjust fees based on volatility or pool utilization. Higher volatility means higher fees to protect LPs from arbitrage losses.
+
+### Time-Weighted Average Price (TWAP)
+
+AMMs can serve as price oracles by tracking time-weighted average prices. This resists manipulation better than spot prices.
+
+### Hooks and Middleware
+
+Uniswap v4 introduces hooks: custom code that runs before/after swaps. This enables programmable pool behavior like dynamic fees, limit orders, or MEV protection.
+
+## Comparing AMM Types
+
+| AMM Type | Best For | Capital Efficiency | IL Risk |
+|----------|----------|-------------------|---------|
+| Constant Product | General trading | Low | Moderate |
+| Concentrated | Active LPs | High | High |
+| Stable | Pegged assets | Very High | Very Low |
+| Weighted | Index-like exposure | Medium | Varies |
+
+## AMM Limitations
+
+### Cannot Do Limit Orders Natively
+
+AMMs execute at the current price, not a target price. Workarounds exist (range orders in v3, hook implementations) but are not as elegant as order books for precise execution.
+
+### Impermanent Loss
+
+The fundamental trade-off: providing liquidity means accepting rebalancing risk when prices diverge. See [Impermanent Loss Explained](/guides/impermanent-loss).
+
+### MEV Vulnerability
+
+Sandwich attacks extract value from AMM traders. A bot sees your pending trade, front-runs it to move the price, and back-runs to profit from your slippage. Private transactions and MEV protection help mitigate this.
+
+### Oracle Manipulation
+
+Relying on AMM prices for oracles can be dangerous. Low-liquidity pools can be manipulated by large trades. TWAP oracles and multiple price sources reduce this risk.
+
+## The Future of AMMs
+
+AMM design continues evolving:
+
+- **Intent-based trading**: Users express what they want; solvers find optimal execution
+- **Cross-chain AMMs**: Liquidity spanning multiple blockchains
+- **Off-chain computation**: Calculating optimal routes off-chain, settling on-chain
+- **Account abstraction**: Enabling gasless trades and smart wallet interactions
+
+The core AMM concept remains: deterministic pricing through smart contracts. Implementations get more sophisticated, but the foundation is solid.
+
+## Summary
+
+AMMs replaced order books with mathematical formulas, enabling trustless, always-available trading on decentralized exchanges. The constant product formula (x * y = k) created the foundation, with innovations like concentrated liquidity and stable curves addressing specific use cases.
+
+Understanding AMMs helps you:
+- Choose the right DEX for your trades
+- Evaluate LP opportunities
+- Understand why slippage occurs
+- Assess smart contract risks
+
+AMMs are the engine powering DeFi trading. Learning how they work puts you ahead of most market participants.
+
+Compare AMM-based DEXs at [DexRank](/).

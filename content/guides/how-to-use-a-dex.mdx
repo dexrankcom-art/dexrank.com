@@ -1,0 +1,239 @@
+---
+title: "How to Use a DEX: Step-by-Step Tutorial"
+description: "Learn how to make your first trade on a decentralized exchange. Complete walkthrough covering wallet setup, connecting, swapping, and staying safe."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "10 min read"
+difficulty: "beginner"
+tags: ["defi", "dex", "tutorial", "wallet"]
+---
+
+## Before You Start
+
+Using a decentralized exchange requires a self-custody wallet with cryptocurrency already in it. If you have never used a crypto wallet, this guide will walk you through the entire process from scratch.
+
+**What you will need:**
+- A computer or smartphone
+- An internet connection
+- About 15-30 minutes for initial setup
+- A small amount of cryptocurrency (can be purchased through the wallet)
+
+## Step 1: Set Up a Wallet
+
+A wallet stores your private keys and lets you sign transactions. For beginners, browser extension wallets offer the best balance of security and convenience.
+
+### For Ethereum and EVM Chains
+
+**MetaMask** is the most widely compatible wallet for Ethereum, Arbitrum, Polygon, Base, BNB Chain, and most other EVM networks.
+
+1. Go to metamask.io and download the browser extension
+2. Click "Create a new wallet"
+3. Create a strong password for the extension
+4. **Write down your 12-word recovery phrase on paper** - never screenshot or store digitally
+5. Confirm your recovery phrase by selecting words in order
+
+Your recovery phrase is the only way to restore your wallet. Anyone with these words controls your funds. Store them securely offline.
+
+### For Solana
+
+**Phantom** is the standard wallet for Solana DEXs.
+
+1. Go to phantom.app and install the extension
+2. Click "Create a new wallet"
+3. Create a password
+4. Write down your recovery phrase
+5. Confirm by re-entering the phrase
+
+### Mobile Options
+
+Both MetaMask and Phantom have mobile apps. The setup process is similar. Mobile wallets are convenient but potentially less secure than desktop with a hardware wallet backup.
+
+## Step 2: Fund Your Wallet
+
+Your wallet needs cryptocurrency to trade and pay transaction fees.
+
+### Option A: Transfer from a Centralized Exchange
+
+If you already have crypto on Coinbase, Binance, or similar:
+
+1. Copy your wallet address (click your account name in MetaMask/Phantom)
+2. Go to your CEX and initiate a withdrawal
+3. Paste your wallet address - triple-check it is correct
+4. Select the correct network (Ethereum mainnet, Arbitrum, Solana, etc.)
+5. Confirm and wait for the transfer (seconds to minutes depending on network)
+
+**Important**: Sending tokens on the wrong network means permanent loss. If your wallet is on Ethereum mainnet, send via Ethereum mainnet. If you want to use Arbitrum, send via Arbitrum.
+
+### Option B: Buy Directly in Wallet
+
+MetaMask and Phantom both support purchasing crypto with debit cards:
+
+1. Click "Buy" in your wallet
+2. Select your payment method and amount
+3. Complete the purchase through the provider (MoonPay, Transak, etc.)
+4. Tokens arrive in your wallet within minutes
+
+Direct purchases often have higher fees (3-5%) compared to CEX trading fees, but eliminate withdrawal steps.
+
+### How Much to Start With
+
+For learning purposes, $20-50 is sufficient. This gives you room for multiple test transactions including gas fees.
+
+On Ethereum mainnet, ensure you have at least 0.01 ETH for gas. On Solana, 0.05 SOL is plenty for many transactions.
+
+## Step 3: Connect to a DEX
+
+Now you can connect your wallet to a decentralized exchange.
+
+### Example: Using Uniswap
+
+1. Go to app.uniswap.org
+2. Click "Connect Wallet" in the top right
+3. Select MetaMask (or your wallet)
+4. A popup appears in your wallet - review and click "Connect"
+5. The site now shows your wallet address and balance
+
+### Verifying the Site is Legitimate
+
+Phishing sites that look identical to real DEXs steal funds constantly. Protect yourself:
+
+- Bookmark the official URL and only use that bookmark
+- Verify the URL in your browser bar before connecting
+- Check that the site has the correct SSL certificate
+- Never click DEX links from emails, DMs, or social media
+- Official URLs: app.uniswap.org, jup.ag, curve.fi, app.sushi.com
+
+If anything looks suspicious, close the tab and navigate manually to the official site.
+
+## Step 4: Make Your First Swap
+
+With your wallet connected and funded, you can execute a trade.
+
+### Selecting Tokens
+
+1. In the swap interface, click the top token to select what you are selling
+2. Click the bottom token to select what you are buying
+3. Enter the amount you want to swap
+
+Example: Swap 0.01 ETH for USDC
+
+### Understanding the Quote
+
+Before confirming, the DEX shows you:
+- **Exchange rate**: How many tokens you receive per token sold
+- **Price impact**: How much your trade moves the market price (keep under 1% for small trades)
+- **Minimum received**: The worst-case amount accounting for slippage
+- **Network fee**: Estimated gas cost in dollars
+
+### Setting Slippage Tolerance
+
+Slippage is the difference between the quoted price and execution price. It occurs because prices can change between when you submit and when your transaction confirms.
+
+- Default (0.5%): Suitable for stable pairs like ETH/USDC
+- Higher (1-3%): Needed for volatile or low-liquidity tokens
+- Too low: Transaction may fail with "insufficient output amount"
+- Too high: You may receive significantly less than expected
+
+Find slippage settings in the gear icon near the swap interface.
+
+### Approving Tokens
+
+For tokens other than the native currency (ETH, SOL), you must first approve the DEX to access your tokens:
+
+1. Click "Approve" when prompted
+2. Confirm the approval transaction in your wallet
+3. Wait for confirmation (this is a separate transaction with its own gas fee)
+4. Now you can proceed with the swap
+
+You only need to approve each token once per DEX. Some wallets let you set unlimited approval or exact amounts.
+
+### Confirming the Swap
+
+1. Click "Swap" on the DEX
+2. Review the transaction details in your wallet popup
+3. Check that the amounts and destination match what you expect
+4. Click "Confirm" in your wallet
+5. Wait for the transaction to process
+
+On Ethereum mainnet, this takes 12-60 seconds. On Solana or Layer 2s, usually under 5 seconds.
+
+### Verifying Success
+
+After confirmation:
+- Your wallet balance updates to show new tokens
+- You can view the transaction on a block explorer (Etherscan, Solscan)
+- The swap interface resets for a new trade
+
+If the transaction fails, you pay gas fees but tokens return to your wallet. Common failure reasons include insufficient gas or slippage exceeded.
+
+## Step 5: Staying Safe
+
+DEX trading requires vigilance. Here are essential practices:
+
+### Wallet Security
+
+- Never share your recovery phrase with anyone
+- Use a hardware wallet (Ledger, Trezor) for significant amounts
+- Disconnect from sites you are not actively using
+- Regularly review and revoke token approvals at revoke.cash
+
+### Avoiding Scams
+
+- Do not buy tokens promoted in DMs or social media ads
+- Verify token contract addresses on official project documentation
+- Be wary of tokens with names similar to popular projects
+- If a deal seems too good to be true, it is a scam
+
+### Managing Approvals
+
+When you approve a token, you give the smart contract permission to move that token from your wallet. Malicious or compromised contracts can exploit this.
+
+To review and revoke approvals:
+1. Go to revoke.cash
+2. Connect your wallet
+3. Review all active approvals
+4. Revoke any you do not recognize or no longer need
+
+## Common Issues and Solutions
+
+### Transaction Stuck Pending
+
+If your transaction stays pending for a long time:
+- You may have set gas too low (on Ethereum)
+- The network may be congested
+- You can speed up or cancel through your wallet (MetaMask: Activity > Speed Up/Cancel)
+
+### Insufficient Funds for Gas
+
+You need the native token (ETH, SOL, BNB) to pay transaction fees even when swapping other tokens. If you have USDC but no ETH, you cannot swap until you acquire ETH for gas.
+
+### High Price Impact Warning
+
+This means your trade size is large relative to pool liquidity. Options:
+- Split into multiple smaller trades
+- Use a DEX aggregator to route across multiple pools
+- Wait for more liquidity
+- Accept the impact if you understand the cost
+
+### Token Not Showing in Wallet
+
+After swapping, if the new token does not appear:
+- The wallet may not recognize the token automatically
+- Add the token manually by pasting its contract address
+- Verify the swap completed on the block explorer
+
+## Next Steps
+
+Once you have completed your first swap, explore further:
+
+- [Liquidity Pools Explained](/guides/liquidity-pools-explained) - Learn how to earn fees as an LP
+- [DEX Fees Explained](/guides/dex-fees-explained) - Understand where your money goes
+- [DEX Security Guide](/guides/dex-security-guide) - Protect your funds from common threats
+
+Compare swap fees and find the best DEX for your needs at [DexRank](/).
+
+## Summary
+
+Using a DEX involves setting up a self-custody wallet, funding it with cryptocurrency, connecting to the DEX interface, and executing swaps through your wallet. The process becomes routine after a few transactions.
+
+Start with small amounts, verify everything before confirming, and gradually build confidence with the technology. Self-custody requires personal responsibility, but it also gives you full control over your funds.

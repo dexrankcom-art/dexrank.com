@@ -1,0 +1,195 @@
+---
+title: "Impermanent Loss Explained: What Every LP Needs to Know"
+description: "Understand impermanent loss in DeFi liquidity pools. Learn how it works, when it matters, and strategies to minimize its impact on your LP returns."
+publishedAt: "2026-01-20"
+updatedAt: "2026-01-20"
+readingTime: "10 min read"
+difficulty: "beginner"
+tags: ["defi", "impermanent-loss", "liquidity", "lp"]
+---
+
+## What is Impermanent Loss?
+
+**Impermanent loss (IL)** occurs when the price ratio between tokens in a liquidity pool changes after you deposit. You end up with less dollar value than if you had simply held the tokens in your wallet.
+
+The loss is called "impermanent" because it only becomes realized when you withdraw. If prices return to your original deposit ratio, the loss disappears. But if you withdraw at a different ratio, the loss is permanent.
+
+Impermanent loss is the primary risk that liquidity providers must understand and manage. For many pools, IL can exceed the trading fees earned.
+
+## How Impermanent Loss Happens
+
+When you provide liquidity to a 50/50 pool, you deposit equal dollar values of two tokens. The AMM formula (x * y = k) means the pool constantly rebalances as prices change.
+
+### Step-by-Step Example
+
+You deposit $1,000 into an ETH/USDC pool:
+- ETH price: $2,000
+- You deposit: 0.25 ETH ($500) + 500 USDC ($500)
+
+**Scenario: ETH doubles to $4,000**
+
+The pool rebalances. Arbitrageurs buy cheap ETH from the pool until the pool price matches the market. After rebalancing:
+- Your share: approximately 0.177 ETH + 707 USDC
+- Value: 0.177 * $4,000 + $707 = $1,414
+
+If you had just held:
+- 0.25 ETH * $4,000 = $1,000
+- 500 USDC = $500
+- Total: $1,500
+
+**Impermanent loss: $1,500 - $1,414 = $86 (5.7%)**
+
+You still gained value ($1,414 vs. initial $1,000), but you gained less than if you had simply held the assets outside the pool.
+
+## The Math Behind Impermanent Loss
+
+For a standard 50/50 pool, impermanent loss depends only on the price ratio change, not the direction:
+
+| Price Change | IL |
+|--------------|-----|
+| 1.25x (25% move) | 0.6% |
+| 1.5x (50% move) | 2.0% |
+| 2x (100% move) | 5.7% |
+| 3x (200% move) | 13.4% |
+| 4x (300% move) | 20.0% |
+| 5x (400% move) | 25.5% |
+
+The formula: IL = 2 * sqrt(price_ratio) / (1 + price_ratio) - 1
+
+Notice that IL accelerates with larger price moves. A 2x move costs 5.7%, but a 4x move costs 20%. Extreme price changes devastate LP positions.
+
+## When Impermanent Loss Matters
+
+### IL Becomes Permanent When You Withdraw
+
+If you deposited when ETH was $2,000 and withdraw when ETH is $4,000, your 5.7% IL is locked in. You cannot recover it even if ETH later returns to $2,000.
+
+### IL Compounds Over Time with Volatility
+
+Even if prices eventually return to your entry, repeated up and down movements cause cumulative rebalancing. Each rebalance crystallizes small losses that add up.
+
+### IL Versus Fees
+
+Impermanent loss must be weighed against fees earned. If your pool earns 30% APY in fees but suffers 10% IL, you still profit 20%. But if fees are 5% and IL is 15%, you lose 10%.
+
+High-volume pools often overcome IL with fees. Low-volume pools in volatile markets usually do not.
+
+## Real-World Examples
+
+### Example 1: Stablecoin Pool (Low IL)
+
+USDC/DAI pool where both tokens stay near $1.
+
+Price rarely moves more than 0.5%, so IL is negligible (under 0.01%). This is why stablecoin LPs can earn consistent returns with minimal risk.
+
+### Example 2: Blue-Chip Volatile Pool (Moderate IL)
+
+ETH/USDC pool where ETH fluctuates 50-100% annually.
+
+If ETH moves 50% up or down, IL is about 2%. If fees exceed 2% for the period, you profit. ETH/USDC pools on major DEXs typically earn 10-30% in fees annually, usually outpacing IL.
+
+### Example 3: New Token Pool (Severe IL)
+
+NEW/ETH pool for a freshly launched token.
+
+New tokens often move 10x or more. A 10x move causes 42% IL. Even if you earn 100% in fees, you lose 42% of your capital. Many LPs in new token pools suffer massive losses.
+
+## Strategies to Minimize Impermanent Loss
+
+### 1. Provide Liquidity for Correlated Assets
+
+Pairs that move together minimize IL:
+- ETH/stETH (staked ETH follows ETH price)
+- USDC/USDT (both pegged to $1)
+- WBTC/renBTC (both track Bitcoin)
+
+If both assets move the same direction by similar amounts, the ratio stays stable and IL remains low.
+
+### 2. Choose Stablecoin Pairs
+
+Pure stablecoin pools (USDC/DAI, FRAX/USDC) virtually eliminate IL. Returns are lower but consistent. Good for risk-averse LPs.
+
+### 3. Use Weighted Pools
+
+Balancer offers pools with custom weightings like 80/20 instead of 50/50. An 80% ETH / 20% USDC pool reduces your USDC exposure and thus IL from ETH price changes.
+
+The trade-off: you earn fewer fees from the underweighted side.
+
+### 4. Set Tighter Ranges (Concentrated Liquidity)
+
+Uniswap v3 lets you concentrate liquidity in a price range. You earn higher fees within that range, but face amplified IL if price leaves your range.
+
+For stable pairs, a tight range like $0.99-$1.01 maximizes fees with minimal IL risk. For volatile pairs, ranges require active management.
+
+### 5. LP During Low Volatility Periods
+
+If you expect major price moves (earnings, protocol upgrades, macro events), consider waiting. Enter when you expect prices to remain relatively stable.
+
+### 6. Take Profits Regularly
+
+If fees accumulated are high, consider withdrawing some or all of your position to lock in gains before IL erodes them. Do not let paper profits disappear.
+
+## When to Accept Impermanent Loss
+
+IL is not always bad. Consider it acceptable when:
+
+- Fees consistently exceed IL
+- You want exposure to both assets anyway
+- You are farming additional token rewards that offset IL
+- The pool is part of a hedged strategy
+- You expect prices to return to your entry ratio
+
+IL is problematic when:
+
+- You would have preferred holding one token (usually the one that pumped)
+- Fees are too low to compensate
+- Price divergence appears permanent
+- You need to exit at an unfavorable ratio
+
+## Tools for Tracking Impermanent Loss
+
+Several tools help you monitor IL in real-time:
+
+- **Revert Finance**: Detailed analytics for Uniswap v3 positions
+- **APY.vision**: Historical IL tracking across multiple DEXs
+- **DeBank**: Portfolio view showing LP positions and estimated IL
+- **Zapper**: Aggregate view of DeFi positions including IL estimates
+
+Checking IL regularly helps you decide when to adjust or exit positions.
+
+## Impermanent Loss vs. Other Risks
+
+IL is one of several LP risks:
+
+| Risk | Description | Can Be Recovered? |
+|------|-------------|-------------------|
+| Impermanent Loss | Rebalancing loss from price changes | Yes, if prices return |
+| Smart Contract Risk | Bugs or exploits drain funds | No |
+| Rug Pull | Project team drains liquidity | No |
+| Permanent Token Decline | One token goes to zero | No |
+
+IL is the most common risk but also the most manageable. Smart contract and rug pull risks, while rarer, are catastrophic.
+
+## Key Takeaways
+
+1. **IL increases with price divergence**: Small moves mean small IL. Large moves mean large IL.
+
+2. **IL is symmetrical**: It does not matter if prices go up or down, only how much they diverge.
+
+3. **Fees offset IL**: High-volume pools can compensate for moderate IL. Calculate both before depositing.
+
+4. **Correlated pairs reduce IL**: Tokens that move together minimize rebalancing losses.
+
+5. **IL reverses if prices return**: But waiting is not guaranteed to pay off. Prices may never return.
+
+6. **Withdrawal locks in IL**: Once you remove liquidity at a different ratio, the loss is permanent.
+
+## Summary
+
+Impermanent loss is the cost of providing liquidity when asset prices diverge. It represents the opportunity cost of holding tokens in a pool versus in your wallet.
+
+Understanding IL helps you choose appropriate pools, size positions correctly, and evaluate whether expected fees justify the risk. For many pools, fees exceed IL and LPing is profitable. For others, especially volatile new tokens, IL destroys capital faster than fees accumulate.
+
+Calculate potential IL before depositing, monitor your positions regularly, and adjust your strategy based on market conditions.
+
+Compare LP opportunities across DEXs at [DexRank](/).
