@@ -1,21 +1,23 @@
 # Phase 4: Production & Polish - Research
 
 **Researched:** 2026-01-20
-**Domain:** Next.js 15 animations, theming, OG images, SEO infrastructure, Core Web Vitals
+**Domain:** Next.js 16 animations, theming, OG images, SEO infrastructure, Core Web Vitals
 **Confidence:** HIGH (primary sources verified)
 
 ## Summary
 
 This research covers the technical implementation for Phase 4's production polish requirements: animations, dark mode, OG image generation, SEO infrastructure, Core Web Vitals optimization, and newsletter signup.
 
-**Key findings:**
-- **Animation approach:** CSS animations first, with Motion library (new name for Framer Motion) only when orchestration is needed. The vanilla JS `animate()` API is 3.8KB; React integration via `motion/react` can be optimized to ~4.6KB with LazyMotion.
-- **Dark mode:** next-themes is the standard solution. Requires `suppressHydrationWarning` on `<html>` element. Works with Tailwind CSS v4's `@custom-variant dark` syntax (already configured in the project).
-- **OG images:** Use `ImageResponse` from `next/og` (built into Next.js 15 App Router). Supports JSX/CSS with flexbox layout, custom fonts, and 500KB bundle limit.
-- **SEO:** Next.js 15 has built-in metadata file conventions for sitemap.xml and robots.txt. Dynamic generation via `sitemap.ts` and `robots.ts` is type-safe and cached by default.
-- **Newsletter:** Resend is the modern standard for transactional email in Next.js. 3,000 emails/month free tier. Simple API route integration with Server Actions.
+The project uses **Next.js 16.1.3** (App Router) with **React 19.2.3**, **Tailwind CSS v4**, and **shadcn/ui** components. Key decisions from CONTEXT.md constrain implementation: CSS animations first, Motion library only for orchestrated sequences, skip View Transitions API, use next-themes for dark mode, and Resend for newsletter.
 
-**Primary recommendation:** Leverage Next.js 15's built-in capabilities for SEO and OG images. Use CSS animations for 90% of interactions; reserve Motion library for staggered list animations and orchestrated sequences only.
+**Key findings:**
+- **Animation approach:** CSS animations first for hover states and transitions. Motion library (`motion` package v12.x) only when orchestration is needed. Use `useAnimate` hook from `motion/react-mini` at just 2.3KB for staggered lists.
+- **Dark mode:** next-themes v0.4.6 is the standard solution. Requires `suppressHydrationWarning` on `<html>` element. Works with Tailwind CSS v4's `@custom-variant dark` syntax (already configured in the project).
+- **OG images:** Use `ImageResponse` from `next/og` (built into Next.js 16 App Router). Supports JSX with flexbox layout. **Critical:** In Next.js 16+, `params` is now a Promise that must be awaited.
+- **SEO:** Next.js 16 has built-in file conventions for `sitemap.ts` and `robots.ts`. Dynamic generation is type-safe and cached by default.
+- **Newsletter:** Resend v6.x with Contacts API. As of 2025, contacts are global entities identified by email - simplified API without mandatory audience_id.
+
+**Primary recommendation:** Leverage Next.js 16's built-in capabilities for SEO and OG images. Use CSS animations for 90% of interactions; reserve Motion library's `useAnimate` hook (2.3KB) for staggered table rows and orchestrated sequences only.
 
 ## Standard Stack
 
@@ -23,18 +25,25 @@ This research covers the technical implementation for Phase 4's production polis
 
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
-| next-themes | ^0.4.x | Dark mode toggle with system preference | Standard for Next.js, handles SSR hydration |
-| motion | ^11.x | Orchestrated animations (stagger, sequences) | Lightweight (3.8KB vanilla, 4.6KB React optimized), built on WAAPI |
-| resend | ^4.x | Newsletter email sending | Modern DX, 3K free emails/month, React Email support |
-| @vercel/og | (built-in) | OG image generation | Built into Next.js 15 via `next/og` |
+| next-themes | ^0.4.6 | Dark mode toggle with system preference | Standard for Next.js, handles SSR hydration, React 19 compatible |
+| motion | ^12.27.1 | Orchestrated animations (stagger, sequences) | `useAnimate` mini is 2.3KB, built on WAAPI, GPU-accelerated |
+| resend | ^6.8.0 | Newsletter email capture | Modern DX, global contacts API, 1K free contacts/month |
 
 ### Supporting Libraries (Already in Project)
 
 | Library | Version | Purpose | Phase 4 Role |
 |---------|---------|---------|--------------|
 | tw-animate-css | ^1.4.0 | CSS animation utilities | Micro-interactions, hover states |
-| lucide-react | ^0.562.0 | Icons | Theme toggle, newsletter UI |
+| lucide-react | ^0.562.0 | Icons | Theme toggle (Sun/Moon), newsletter UI |
 | zod | ^4.3.5 | Validation | Newsletter form validation |
+
+### Alternatives Considered
+
+| Instead of | Could Use | Tradeoff |
+|------------|-----------|----------|
+| motion useAnimate | CSS @keyframes only | CSS can't orchestrate staggered sequences easily |
+| Resend | Buttondown | Buttondown is newsletter-focused but less programmable |
+| next-themes | Manual CSS + context | next-themes handles SSR edge cases automatically |
 
 ### Installation
 
@@ -42,7 +51,7 @@ This research covers the technical implementation for Phase 4's production polis
 npm install next-themes motion resend
 ```
 
-**Note:** `@vercel/og` is already included in Next.js 15 App Router - no separate installation needed.
+**Note:** `@vercel/og` is already included in Next.js 16 App Router via `next/og` - no separate installation needed.
 
 ## Architecture Patterns
 
@@ -51,8 +60,8 @@ npm install next-themes motion resend
 ```
 src/
 ├── app/
-│   ├── layout.tsx              # ThemeProvider wrapper
-│   ├── sitemap.ts              # Dynamic sitemap generation
+│   ├── layout.tsx              # ThemeProvider wrapper, suppressHydrationWarning
+│   ├── sitemap.ts              # Dynamic sitemap generation (570+ URLs)
 │   ├── robots.ts               # Dynamic robots.txt
 │   ├── opengraph-image.tsx     # Default OG image
 │   ├── api/
@@ -71,10 +80,9 @@ src/
 │   │   ├── stagger-list.tsx    # Staggered table rows
 │   │   └── count-up.tsx        # Number animations
 │   └── ui/
-│       └── skeleton.tsx        # Shimmer loading (already exists)
+│       └── skeleton.tsx        # Shimmer loading (enhance existing)
 ├── lib/
-│   ├── email.ts                # Resend client
-│   └── animations.ts           # Shared animation configs
+│   └── animations.ts           # Shared animation CSS classes
 └── styles/
     └── globals.css             # CSS animations, shimmer keyframes
 ```
@@ -83,7 +91,7 @@ src/
 
 **What:** Configure dark mode with system preference detection
 **When to use:** Root layout setup
-**Source:** [next-themes GitHub](https://github.com/pacocoursey/next-themes), [Next.js Hydration Docs](https://nextjs.org/docs/messages/react-hydration-error)
+**Source:** [next-themes GitHub](https://github.com/pacocoursey/next-themes)
 
 ```tsx
 // src/app/layout.tsx
@@ -111,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ### Pattern 2: Theme Toggle Component
 
-**What:** Client component for switching themes
+**What:** Client component for switching themes with hydration-safe rendering
 **When to use:** Header/navbar
 
 ```tsx
@@ -124,15 +132,15 @@ import { Moon, Sun } from 'lucide-react';
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Prevent hydration mismatch by not rendering until mounted
+  // Prevent hydration mismatch by rendering placeholder until mounted
   if (!mounted) {
-    return <div className="w-9 h-9" />; // Placeholder same size as button
+    return <div className="w-9 h-9" aria-hidden="true" />;
   }
 
   return (
@@ -153,20 +161,24 @@ export function ThemeToggle() {
 
 ### Pattern 3: CSS-First Animations with GPU Acceleration
 
-**What:** Micro-interactions using pure CSS
+**What:** Micro-interactions using pure CSS (no JS bundle cost)
 **When to use:** Hover states, click feedback, simple transitions
-**Source:** [Core Web Vitals Guide](https://www.digitalapplied.com/blog/core-web-vitals-optimization-guide-2025)
+**Source:** [Core Web Vitals Guide 2025](https://www.digitalapplied.com/blog/core-web-vitals-optimization-guide-2025)
 
 ```css
-/* src/styles/globals.css - Add to existing file */
+/* Add to src/app/globals.css */
 
-/* Shimmer animation for skeletons */
+/* Shimmer animation for skeletons - GPU accelerated */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* Card hover lift - GPU accelerated */
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Card hover lift - GPU accelerated (transform + opacity only) */
 .card-hover {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -190,7 +202,7 @@ export function ThemeToggle() {
   animation: fade-in 0.2s ease-out;
 }
 
-/* Reduced motion support */
+/* Reduced motion support - REQUIRED for accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -200,52 +212,51 @@ export function ThemeToggle() {
 }
 ```
 
-### Pattern 4: Motion Library for Staggered Lists
+### Pattern 4: Motion useAnimate for Staggered Lists
 
-**What:** Orchestrated animations with Motion library
+**What:** Orchestrated stagger animations with minimal bundle (2.3KB)
 **When to use:** Table rows appearing, list item staggers
-**Source:** [Motion Installation Docs](https://motion.dev/docs/react-installation)
+**Source:** [Motion useAnimate docs](https://motion.dev/docs/react-use-animate)
 
 ```tsx
-// src/components/animated/stagger-list.tsx
+// src/components/animated/stagger-rows.tsx
 'use client';
 
-import { motion, stagger, useAnimate } from 'motion/react';
+import { useAnimate, stagger } from 'motion/react-mini';
 import { useEffect } from 'react';
 
-interface StaggerListProps {
-  children: React.ReactNode[];
+interface StaggerRowsProps {
+  children: React.ReactNode;
   staggerDelay?: number;
 }
 
-export function StaggerList({ children, staggerDelay = 0.05 }: StaggerListProps) {
+export function StaggerRows({ children, staggerDelay = 0.05 }: StaggerRowsProps) {
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
+    // Check reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) return;
+
     animate(
-      'li',
+      '[data-row]',
       { opacity: [0, 1], y: [8, 0] },
       { delay: stagger(staggerDelay), duration: 0.2 }
     );
   }, [animate, staggerDelay]);
 
-  return (
-    <ul ref={scope}>
-      {children.map((child, i) => (
-        <li key={i} style={{ opacity: 0 }}>
-          {child}
-        </li>
-      ))}
-    </ul>
-  );
+  return <div ref={scope}>{children}</div>;
 }
 ```
 
-### Pattern 5: OG Image Generation
+**Key:** Import from `motion/react-mini` (2.3KB) not `motion/react` (34KB). The mini version uses WAAPI exclusively for hardware acceleration.
+
+### Pattern 5: OG Image Generation (Next.js 16 API)
 
 **What:** Dynamic Open Graph images per page
 **When to use:** DEX detail pages, chain pages
-**Source:** [Next.js ImageResponse Docs](https://nextjs.org/docs/app/api-reference/functions/image-response)
+**Source:** [Next.js ImageResponse Docs](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image)
 
 ```tsx
 // src/app/dex/[slug]/opengraph-image.tsx
@@ -255,9 +266,16 @@ export const alt = 'DEX Details';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default async function Image({ params }: { params: { slug: string } }) {
+// CRITICAL: In Next.js 16+, params is a Promise
+export default async function Image({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params; // Must await!
+
   // Fetch DEX data
-  const dex = await getDexBySlug(params.slug);
+  const dex = await getDexBySlug(slug);
 
   return new ImageResponse(
     (
@@ -269,7 +287,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: 'oklch(0.12 0.03 290)', // Brand purple-black
+          backgroundColor: '#1a0a2e', // Brand purple-black
           padding: '60px',
         }}
       >
@@ -286,10 +304,10 @@ export default async function Image({ params }: { params: { slug: string } }) {
         <div
           style={{
             fontSize: 36,
-            color: 'oklch(0.75 0.2 145)', // Brand green
+            color: '#4ade80', // Brand green
           }}
         >
-          ${formatNumber(dex.tvl)} TVL
+          ${formatTVL(dex.tvl)} TVL
         </div>
         <div
           style={{
@@ -308,6 +326,12 @@ export default async function Image({ params }: { params: { slug: string } }) {
 }
 ```
 
+**Important limitations:**
+- Only flexbox layout (`display: flex`), no CSS grid
+- Total assets must be under 500KB
+- Use `ttf` or `otf` fonts, not `woff2`
+- OKLCH colors may not work - use hex/rgb
+
 ### Pattern 6: Dynamic Sitemap Generation
 
 **What:** Programmatic sitemap for all 570+ URLs
@@ -317,13 +341,17 @@ export default async function Image({ params }: { params: { slug: string } }) {
 ```typescript
 // src/app/sitemap.ts
 import type { MetadataRoute } from 'next';
-import { getAllDexSlugs, getAllChainSlugs } from '@/lib/db';
+import { db } from '@/lib/db';
+import { dexes, chains } from '@/lib/db/schema';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://dexrank.com';
 
+export const revalidate = 3600; // ISR: regenerate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const dexSlugs = await getAllDexSlugs();  // ~500 DEXs
-  const chainSlugs = await getAllChainSlugs(); // ~27 chains
+  // Fetch all slugs from database
+  const allDexes = await db.select({ slug: dexes.slug }).from(dexes);
+  const allChains = await db.select({ slug: chains.slug }).from(chains);
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
@@ -332,14 +360,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/guides`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
   ];
 
-  const dexPages: MetadataRoute.Sitemap = dexSlugs.map((slug) => ({
+  const dexPages: MetadataRoute.Sitemap = allDexes.map(({ slug }) => ({
     url: `${BASE_URL}/dex/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.7,
   }));
 
-  const chainPages: MetadataRoute.Sitemap = chainSlugs.map((slug) => ({
+  const chainPages: MetadataRoute.Sitemap = allChains.map(({ slug }) => ({
     url: `${BASE_URL}/chain/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
@@ -350,162 +378,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 }
 ```
 
-### Pattern 7: Newsletter Signup with Resend
+### Pattern 7: robots.ts Configuration
 
-**What:** Simple email capture API route
-**When to use:** Footer newsletter form
-**Source:** [Resend Next.js Docs](https://resend.com/docs/send-with-nextjs)
-
-```typescript
-// src/app/api/newsletter/route.ts
-import { Resend } from 'resend';
-import { z } from 'zod';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const subscribeSchema = z.object({
-  email: z.string().email('Invalid email address'),
-});
-
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { email } = subscribeSchema.parse(body);
-
-    // Add to Resend audience (or your preferred list management)
-    const { data, error } = await resend.contacts.create({
-      email,
-      audienceId: process.env.RESEND_AUDIENCE_ID!,
-    });
-
-    if (error) {
-      return Response.json({ error: error.message }, { status: 400 });
-    }
-
-    return Response.json({ success: true, id: data?.id });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return Response.json({ error: error.errors[0].message }, { status: 400 });
-    }
-    return Response.json({ error: 'Something went wrong' }, { status: 500 });
-  }
-}
-```
-
-### Anti-Patterns to Avoid
-
-- **Using Motion/Framer Motion for simple hover states:** CSS is faster, smaller, and sufficient. Motion adds unnecessary JS for single-element animations.
-- **Not using `suppressHydrationWarning`:** Will cause hydration errors with next-themes.
-- **Rendering theme-dependent UI before mount check:** Server doesn't know the theme, causing mismatches.
-- **Using Framer Motion's full import:** Use LazyMotion + `motion/react-m` to reduce bundle from ~34KB to ~4.6KB.
-- **Animating `width`, `height`, `margin`:** These trigger layout recalculations. Only use `transform` and `opacity` for 60fps.
-- **Not respecting `prefers-reduced-motion`:** Accessibility violation and poor UX for users with vestibular disorders.
-
-## Don't Hand-Roll
-
-| Problem | Don't Build | Use Instead | Why |
-|---------|-------------|-------------|-----|
-| Theme persistence | localStorage + custom context | next-themes | Handles SSR, system preference, hydration |
-| OG image rendering | Canvas/Puppeteer | `next/og` ImageResponse | Built-in, Edge-optimized, JSX syntax |
-| Sitemap generation | Manual XML files | `sitemap.ts` convention | Type-safe, automatic caching, dynamic |
-| Email sending | SMTP setup, nodemailer | Resend | Modern API, React templates, free tier |
-| Shimmer animation | Complex JS animation | CSS `@keyframes` + `background-position` | GPU-accelerated, zero JS |
-| Reduced motion detection | Manual media query listening | CSS `@media (prefers-reduced-motion)` | Automatic, no JS needed |
-
-**Key insight:** Next.js 15 has built-in conventions for most SEO and metadata needs. The App Router's file-based metadata system (`sitemap.ts`, `robots.ts`, `opengraph-image.tsx`) is type-safe and automatically cached - no external libraries needed.
-
-## Common Pitfalls
-
-### Pitfall 1: next-themes Hydration Mismatch
-
-**What goes wrong:** Error "Text content does not match server-rendered HTML" or flash of wrong theme (FOWT)
-**Why it happens:** Server renders without knowing user's theme preference (stored in localStorage)
-**How to avoid:**
-1. Add `suppressHydrationWarning` to `<html>` element
-2. Wrap theme-dependent rendering in a mount check (`useState(false)` -> `useEffect` -> `true`)
-3. Use placeholder of same dimensions while unmounted to prevent CLS
-**Warning signs:** Console hydration errors, theme flash on page load
-
-### Pitfall 2: Motion Library Bundle Bloat
-
-**What goes wrong:** 34KB+ added to bundle when only simple animations are needed
-**Why it happens:** Default `motion` import includes all features
-**How to avoid:**
-1. Use CSS for hover states, press feedback, fades
-2. Use `useAnimate` hook for orchestration (smallest API, 2.3KB)
-3. If using `motion` components, use `LazyMotion` + `domAnimation` feature set
-**Warning signs:** Bundle size jumps significantly after adding animations
-
-### Pitfall 3: OG Image Generation Failures
-
-**What goes wrong:** OG images fail to generate or look broken
-**Why it happens:** ImageResponse has strict limitations - flexbox only, 500KB limit, limited CSS
-**How to avoid:**
-1. Only use flexbox (`display: flex`), no grid
-2. Keep total assets under 500KB (inline fonts, minimal images)
-3. Use `ttf` or `otf` fonts, not `woff2`
-4. Test locally with debug mode: `{ debug: true }`
-**Warning signs:** Blank images, SSR errors in production
-
-### Pitfall 4: Sitemap Dynamic Rendering in Next.js 15
-
-**What goes wrong:** Sitemap regenerates on every request instead of being cached
-**Why it happens:** Next.js 15 changed sitemap behavior - using dynamic APIs opts out of caching
-**How to avoid:**
-1. Use `unstable_cache` for database queries in sitemap
-2. Or accept dynamic behavior but add ISR: `export const revalidate = 3600`
-3. Avoid `revalidateTag` in sitemap unless needed
-**Warning signs:** High database load, slow `/sitemap.xml` responses
-
-### Pitfall 5: CLS from Theme Toggle Icon
-
-**What goes wrong:** Layout shift when theme icon changes between Sun/Moon
-**Why it happens:** Icon renders as nothing during hydration, then appears
-**How to avoid:**
-1. Return a placeholder `<div>` with exact same dimensions as icon
-2. Use `w-9 h-9` or explicit sizing that matches mounted state
-**Warning signs:** CLS score > 0.1, visible jump when page loads
-
-## Code Examples
-
-### Skeleton with Shimmer (Enhancement to Existing)
-
-```tsx
-// Enhanced src/components/ui/skeleton.tsx
-import { cn } from '@/lib/utils';
-
-function Skeleton({ className, shimmer = false, ...props }: React.ComponentProps<'div'> & { shimmer?: boolean }) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn(
-        'rounded-md bg-muted',
-        shimmer
-          ? 'bg-gradient-to-r from-muted via-muted-foreground/10 to-muted bg-[length:200%_100%] animate-shimmer'
-          : 'animate-pulse',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-export { Skeleton };
-```
-
-```css
-/* Add to globals.css */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.animate-shimmer {
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-```
-
-### robots.ts Configuration
+**What:** Dynamic robots.txt with sitemap reference
+**Source:** [Next.js robots Docs](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots)
 
 ```typescript
 // src/app/robots.ts
@@ -527,6 +403,174 @@ export default function robots(): MetadataRoute.Robots {
 }
 ```
 
+### Pattern 8: Newsletter Signup with Resend (2025 API)
+
+**What:** Simple email capture using Resend's global contacts API
+**When to use:** Footer newsletter form
+**Source:** [Resend Contacts API](https://resend.com/docs/dashboard/audiences/introduction)
+
+```typescript
+// src/app/api/newsletter/route.ts
+import { Resend } from 'resend';
+import { z } from 'zod';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const subscribeSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { email } = subscribeSchema.parse(body);
+
+    // 2025 API: Contacts are global entities, no audience_id required
+    const { data, error } = await resend.contacts.create({
+      email,
+      unsubscribed: false,
+    });
+
+    if (error) {
+      // Handle duplicate email gracefully
+      if (error.message?.includes('already exists')) {
+        return Response.json({ success: true, message: 'Already subscribed' });
+      }
+      return Response.json({ error: error.message }, { status: 400 });
+    }
+
+    return Response.json({ success: true, id: data?.id });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json({ error: error.errors[0].message }, { status: 400 });
+    }
+    return Response.json({ error: 'Something went wrong' }, { status: 500 });
+  }
+}
+```
+
+### Anti-Patterns to Avoid
+
+- **Using `motion/react` for simple hover states:** CSS is faster, smaller (0KB vs 34KB), and sufficient for single-element animations.
+- **Not using `suppressHydrationWarning`:** Will cause hydration errors with next-themes.
+- **Rendering theme UI before mount check:** Server doesn't know the theme, causing mismatches.
+- **Importing from `motion/react` instead of `motion/react-mini`:** Full import is 34KB vs 2.3KB for useAnimate.
+- **Animating `width`, `height`, `margin`:** These trigger layout recalculations. Only use `transform` and `opacity` for 60fps.
+- **Not respecting `prefers-reduced-motion`:** Accessibility violation and poor UX for users with vestibular disorders.
+- **Using OKLCH in ImageResponse:** OG image generation doesn't support OKLCH colors - use hex or rgb.
+- **Not awaiting params in Next.js 16:** In v16+, `params` is a Promise that must be awaited.
+
+## Don't Hand-Roll
+
+| Problem | Don't Build | Use Instead | Why |
+|---------|-------------|-------------|-----|
+| Theme persistence | localStorage + custom context | next-themes | Handles SSR, system preference, hydration |
+| OG image rendering | Canvas/Puppeteer | `next/og` ImageResponse | Built-in, Edge-optimized, JSX syntax |
+| Sitemap generation | Manual XML files | `sitemap.ts` convention | Type-safe, automatic caching, dynamic |
+| robots.txt | Static file | `robots.ts` convention | Dynamic, type-safe, references sitemap |
+| Email capture | SMTP/nodemailer | Resend | Modern API, global contacts, free tier |
+| Shimmer animation | Complex JS animation | CSS `@keyframes` | GPU-accelerated, zero JS |
+| Reduced motion | Manual media query | CSS `@media (prefers-reduced-motion)` | Automatic, no JS |
+| Staggered animations | Manual setTimeout loops | `motion/react-mini` useAnimate | 2.3KB, handles cleanup |
+
+**Key insight:** Next.js 16 has built-in conventions for most SEO and metadata needs. The App Router's file-based metadata system (`sitemap.ts`, `robots.ts`, `opengraph-image.tsx`) is type-safe and automatically cached - no external libraries needed.
+
+## Common Pitfalls
+
+### Pitfall 1: next-themes Hydration Mismatch
+
+**What goes wrong:** Error "Text content does not match server-rendered HTML" or flash of wrong theme (FOWT)
+**Why it happens:** Server renders without knowing user's theme preference (stored in localStorage)
+**How to avoid:**
+1. Add `suppressHydrationWarning` to `<html>` element
+2. Wrap theme-dependent rendering in a mount check (`useState(false)` -> `useEffect` -> `true`)
+3. Use placeholder of same dimensions while unmounted to prevent CLS
+**Warning signs:** Console hydration errors, theme flash on page load
+
+### Pitfall 2: Motion Library Bundle Bloat
+
+**What goes wrong:** 34KB+ added to bundle when only simple animations are needed
+**Why it happens:** Default `motion/react` import includes all features
+**How to avoid:**
+1. Use CSS for hover states, press feedback, fades (0KB)
+2. Use `useAnimate` from `motion/react-mini` (2.3KB) for orchestration
+3. Never use full `motion` components unless LazyMotion is configured
+**Warning signs:** Bundle size jumps significantly after adding animations
+
+### Pitfall 3: OG Image Generation Failures
+
+**What goes wrong:** OG images fail to generate or look broken
+**Why it happens:** ImageResponse has strict limitations - flexbox only, 500KB limit, limited CSS
+**How to avoid:**
+1. Only use flexbox (`display: flex`), no CSS grid
+2. Keep total assets under 500KB (inline fonts, minimal images)
+3. Use `ttf` or `otf` fonts, not `woff2`
+4. Use hex/rgb colors, not oklch
+5. In Next.js 16+, always `await params`
+**Warning signs:** Blank images, SSR errors in production
+
+### Pitfall 4: Sitemap Caching in Next.js 16
+
+**What goes wrong:** Sitemap regenerates on every request (slow, high DB load)
+**Why it happens:** Using dynamic APIs opts out of static caching
+**How to avoid:**
+1. Add `export const revalidate = 3600` for ISR
+2. Use efficient DB queries (select only slugs, not full records)
+3. Consider splitting into multiple sitemaps if >50K URLs
+**Warning signs:** High database load, slow `/sitemap.xml` responses
+
+### Pitfall 5: CLS from Theme Toggle Icon
+
+**What goes wrong:** Layout shift when theme icon changes between Sun/Moon
+**Why it happens:** Icon renders as nothing during hydration, then appears
+**How to avoid:**
+1. Return a placeholder `<div>` with exact same dimensions as icon
+2. Use `w-9 h-9` or explicit sizing that matches mounted state
+3. Use `aria-hidden="true"` on placeholder
+**Warning signs:** CLS score > 0.1, visible jump when page loads
+
+### Pitfall 6: INP Issues from Heavy JS
+
+**What goes wrong:** INP exceeds 200ms threshold
+**Why it happens:** Too much JavaScript blocking the main thread
+**How to avoid:**
+1. Keep animation JS minimal (CSS first, 2.3KB useAnimate second)
+2. Use React Server Components - they ship zero JS
+3. Defer non-critical scripts with `<Script strategy="lazyOnload">`
+4. Avoid large bundle imports in client components
+**Warning signs:** INP > 200ms in PageSpeed Insights
+
+## Code Examples
+
+### Skeleton with Shimmer (Enhancement to Existing)
+
+```tsx
+// src/components/ui/skeleton.tsx - Enhanced version
+import { cn } from '@/lib/utils';
+
+interface SkeletonProps extends React.ComponentProps<'div'> {
+  shimmer?: boolean;
+}
+
+function Skeleton({ className, shimmer = true, ...props }: SkeletonProps) {
+  return (
+    <div
+      data-slot="skeleton"
+      className={cn(
+        'rounded-md bg-muted',
+        shimmer
+          ? 'bg-gradient-to-r from-muted via-muted-foreground/10 to-muted bg-[length:200%_100%] animate-shimmer'
+          : 'animate-pulse',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Skeleton };
+```
+
 ### Count-Up Animation for Metrics
 
 ```tsx
@@ -543,9 +587,14 @@ interface CountUpProps {
   decimals?: number;
 }
 
-export function CountUp({ end, duration = 1000, prefix = '', suffix = '', decimals = 0 }: CountUpProps) {
+export function CountUp({
+  end,
+  duration = 1000,
+  prefix = '',
+  suffix = '',
+  decimals = 0
+}: CountUpProps) {
   const [count, setCount] = useState(0);
-  const countRef = useRef<number>(0);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -561,13 +610,14 @@ export function CountUp({ end, duration = 1000, prefix = '', suffix = '', decima
       if (!startTimeRef.current) startTimeRef.current = timestamp;
       const progress = Math.min((timestamp - startTimeRef.current) / duration, 1);
 
-      // Ease-out curve
+      // Ease-out cubic curve
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      countRef.current = easeOut * end;
-      setCount(countRef.current);
+      setCount(easeOut * end);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        setCount(end); // Ensure exact final value
       }
     };
 
@@ -579,24 +629,136 @@ export function CountUp({ end, duration = 1000, prefix = '', suffix = '', decima
   }, [end, duration]);
 
   const formatted = count.toFixed(decimals);
-  return <span>{prefix}{formatted}{suffix}</span>;
+  return <span className="tabular-nums">{prefix}{formatted}{suffix}</span>;
 }
 ```
+
+### Newsletter Form Component
+
+```tsx
+// src/components/newsletter-form.tsx
+'use client';
+
+import { useState } from 'react';
+import { z } from 'zod';
+
+const emailSchema = z.string().email();
+
+export function NewsletterForm() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    const result = emailSchema.safeParse(email);
+    if (!result.success) {
+      setStatus('error');
+      setMessage('Please enter a valid email');
+      return;
+    }
+
+    setStatus('loading');
+
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus('success');
+        setMessage('Thanks for subscribing!');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Something went wrong');
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Network error. Please try again.');
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+        className="flex-1 px-4 py-2 rounded-md border bg-background"
+        disabled={status === 'loading'}
+      />
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+      >
+        {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+      </button>
+      {message && (
+        <p className={status === 'success' ? 'text-green-500' : 'text-destructive'}>
+          {message}
+        </p>
+      )}
+    </form>
+  );
+}
+```
+
+## Core Web Vitals Optimization Techniques
+
+### LCP (Largest Contentful Paint) - Target: <2.5s
+
+| Technique | Implementation |
+|-----------|---------------|
+| Preload hero images | `<Image priority />` on above-fold images |
+| Use Next.js Image | Automatic optimization, `sizes` prop for responsive |
+| Server Components | Ship zero JS, faster HTML delivery |
+| Edge deployment | Vercel Edge Network reduces TTFB |
+
+### INP (Interaction to Next Paint) - Target: <200ms
+
+| Technique | Implementation |
+|-----------|---------------|
+| Minimize client JS | Use Server Components (can reduce bundle 30-60%) |
+| Small animation bundle | `motion/react-mini` at 2.3KB vs 34KB |
+| Defer non-critical scripts | `<Script strategy="lazyOnload">` |
+| Avoid layout-triggering animations | Only animate `transform` and `opacity` |
+
+### CLS (Cumulative Layout Shift) - Target: <0.1
+
+| Technique | Implementation |
+|-----------|---------------|
+| Reserve space for dynamic content | Use Skeleton with explicit dimensions |
+| Specify image dimensions | Always set `width` and `height` on Image |
+| Avoid FOUT | Use `display: swap` for fonts, reserve space |
+| Theme toggle placeholder | Same-size div until mounted |
 
 ## State of the Art
 
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
 | `framer-motion` import | `motion/react` import | 2024 (Motion rebrand) | Same features, cleaner imports |
+| Full motion bundle (34KB) | `motion/react-mini` (2.3KB) | Available now | 93% smaller for useAnimate |
 | Manual OG with Puppeteer | `next/og` ImageResponse | Next.js 13.3+ | Edge-native, 10x faster |
 | External sitemap libs | `sitemap.ts` convention | Next.js 13+ | Type-safe, zero config |
-| CSS darkMode selector | `@custom-variant dark` | Tailwind v4 | Simpler config in globals.css |
-| FID metric | INP metric | March 2024 | Focus on all interactions, not just first |
+| Sync params access | `await params` (Promise) | Next.js 16.0.0 | Breaking change |
+| `darkMode: ['class']` in config | `@custom-variant` in CSS | Tailwind v4 | Simpler, CSS-native |
+| FID metric | INP metric | March 2024 | Focus on all interactions |
+| Resend audience-scoped contacts | Global contacts by email | 2025 | Simpler API |
 
 **Deprecated/outdated:**
 - `framer-motion` package name: Still works but `motion` is the new package
+- Sync `params` access: Must await in Next.js 16+
 - `darkMode: ['class']` in tailwind.config: Tailwind v4 uses `@custom-variant` in CSS
 - `@vercel/og` separate install: Now built into `next/og` in App Router
+- Resend `audienceId` required: 2025 API makes contacts global
 
 ## Open Questions
 
@@ -605,41 +767,45 @@ export function CountUp({ end, duration = 1000, prefix = '', suffix = '', decima
    - What's unclear: Whether `font-feature-settings: 'tnum'` works with Google Fonts Inter
    - Recommendation: Test with Google Fonts first; if tabular figures don't work, self-host Inter from rsms.me
 
-2. **Sitemap caching behavior in Next.js 15**
-   - What we know: Behavior changed from static (Next.js 14) to dynamic (Next.js 15) when using dynamic APIs
-   - What's unclear: Exact ISR revalidation strategy for database-driven sitemaps
-   - Recommendation: Test with `export const revalidate = 3600` and monitor database load
+2. **OKLCH in OG images**
+   - What we know: ImageResponse uses Satori which has limited CSS support
+   - What's unclear: Whether oklch colors work in ImageResponse
+   - Recommendation: Use hex colors (#1a0a2e for purple-black, #4ade80 for green) in OG images
 
-3. **Resend audience management vs simple list**
-   - What we know: Resend supports contacts API with audiences
-   - What's unclear: Whether simple list storage (database) is better for launch announcements only
-   - Recommendation: Start with Resend audiences for simplicity; migrate to database if needed
+3. **Resend free tier limits**
+   - What we know: 1,000 contacts free, then $40/mo for 5K contacts
+   - What's unclear: Whether storing emails in own DB + sending via Resend is better
+   - Recommendation: Start with Resend contacts; evaluate DB storage if list grows large
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Next.js ImageResponse API Docs](https://nextjs.org/docs/app/api-reference/functions/image-response) - OG image generation
+- [Next.js ImageResponse API Docs](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image) - OG image generation, params Promise change
 - [Next.js Sitemap File Convention](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap) - Dynamic sitemap generation
-- [Next.js robots.txt Convention](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots) - robots.txt generation
-- [next-themes GitHub](https://github.com/pacocoursey/next-themes) - Theme provider setup
+- [Next.js robots.txt Convention](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots) - robots.ts configuration
+- [next-themes GitHub](https://github.com/pacocoursey/next-themes) - Theme provider setup, hydration handling
 - [Resend Next.js Docs](https://resend.com/docs/send-with-nextjs) - Newsletter integration
-- [Motion Installation Docs](https://motion.dev/docs/react-installation) - Animation library setup
+- [Motion Library GitHub](https://github.com/motiondivision/motion) - Animation library
+- [Motion useAnimate Docs](https://motion.dev/docs/react-use-animate) - Stagger animation patterns
+- [Motion Bundle Size Docs](https://motion.dev/docs/react-reduce-bundle-size) - mini vs hybrid packages
 
 ### Secondary (MEDIUM confidence)
 - [Core Web Vitals Optimization Guide 2025](https://www.digitalapplied.com/blog/core-web-vitals-optimization-guide-2025) - LCP, INP, CLS techniques
-- [Motion Bundle Size Docs](https://motion.dev/docs/react-reduce-bundle-size) - LazyMotion optimization
+- [How to Optimize Core Web Vitals in NextJS 2025](https://makersden.io/blog/optimize-web-vitals-in-nextjs-2025) - Next.js specific patterns
 - [shadcn/ui Skeleton](https://ui.shadcn.com/docs/components/skeleton) - Skeleton component patterns
+- [Resend Audiences Introduction](https://resend.com/docs/dashboard/audiences/introduction) - 2025 contacts API changes
 
 ### Tertiary (LOW confidence - verify before use)
-- Various Medium/DEV.to articles on specific implementation details
+- Various blog posts on specific implementation details
 
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH - Official docs and widely adopted libraries
-- Architecture patterns: HIGH - Based on official Next.js conventions
-- Pitfalls: HIGH - Verified from official docs and GitHub issues
-- Animation specifics: MEDIUM - Motion docs fetched but some details from secondary sources
+- Standard stack: HIGH - Official docs and widely adopted libraries verified
+- Architecture patterns: HIGH - Based on official Next.js 16 conventions
+- Pitfalls: HIGH - Verified from official docs and changelog
+- Animation specifics: HIGH - Motion docs verified, bundle sizes confirmed
+- Core Web Vitals: MEDIUM - Multiple sources agree, techniques proven
 
 **Research date:** 2026-01-20
 **Valid until:** 2026-02-20 (30 days - stable libraries, established patterns)
