@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { Button } from '@/components/ui/button';
 
 export default function Error({
@@ -14,8 +15,8 @@ export default function Error({
     // Log error to console in development
     console.error('Route error:', error);
 
-    // Sentry integration will be added in Task 2
-    // Sentry.captureException(error);
+    // Report to Sentry in production
+    Sentry.captureException(error);
   }, [error]);
 
   return (
