@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 3 of 4 (Content & Differentiation)
-Plan: 4 of 7 in current phase
+Plan: 5 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 03-04-PLAN.md
+Last activity: 2026-01-20 - Completed 03-05-PLAN.md
 
-Progress: [████████░░] 77% (10/13 plans)
+Progress: [████████░░] 85% (11/13 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~12 minutes
-- Total execution time: ~120 minutes
+- Total plans completed: 11
+- Average duration: ~11 minutes
+- Total execution time: ~125 minutes
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████░░] 77% (10/13 plans)
 |-------|-------|-------|----------|
 | 1 | 3/3 | ~64min | ~21min |
 | 2 | 3/3 | ~33min | ~11min |
-| 3 | 4/7 | ~23min | ~6min |
+| 3 | 5/7 | ~28min | ~6min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (12min), 03-01 (8min), 03-02 (5min), 03-03 (5min), 03-04 (5min)
-- Trend: Very efficient at ~7min/plan for phase 3
+- Last 5 plans: 03-01 (8min), 03-02 (5min), 03-03 (5min), 03-04 (5min), 03-05 (5min)
+- Trend: Very efficient at ~6min/plan for phase 3
 
 *Updated after each plan completion*
 
@@ -66,6 +66,8 @@ Recent decisions affecting current work:
 | 03-04 | ISR revalidation | 1 hour | Balance fresh metrics with build performance |
 | 03-02 | Editorial content focus | Top 50 derivatives by TVL | Database has TVL data for derivatives, not spot DEXs |
 | 03-02 | Content tiering | 10 Tier 1 + 40 Tier 2 | Match protocol significance to content depth |
+| 03-05 | DEX type categories | 7 types from taxonomy | Covers major DEX classifications |
+| 03-05 | Aggregator detection | Name pattern matching | Aggregators share "Dexes" category |
 
 ### Pending Todos
 
@@ -129,12 +131,12 @@ All Phase 2 success criteria verified:
 | 03-02 | Editor's Take Content | COMPLETE |
 | 03-03 | DEX Comparison Engine | COMPLETE |
 | 03-04 | Chain Landing Pages | COMPLETE |
-| 03-05 | Category Landing Pages | Pending |
+| 03-05 | Category Landing Pages | COMPLETE |
 | 03-06 | Educational Guides | Pending |
 | 03-07 | SEO & Metadata Enhancements | Pending |
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-02-PLAN.md Task 4 (Tier 2 editorial content)
+Stopped at: Completed 03-05-PLAN.md (Category Landing Pages)
 Resume file: None
