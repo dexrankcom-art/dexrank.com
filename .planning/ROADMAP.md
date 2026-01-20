@@ -2,7 +2,7 @@
 
 ## Overview
 
-DexRank v1.0 delivers a database-first DEX comparison platform in four phases. Phase 1 establishes data infrastructure (DefiLlama sync to PostgreSQL). Phase 2 builds the homepage rankings and basic DEX pages with real-time metrics. Phase 3 adds editorial content, comparison tools, chain pages, guides, and methodology transparency for SEO differentiation. Phase 4 finalizes production readiness with Core Web Vitals optimization, SEO metadata, and deployment configuration.
+DexRank v1.0 delivers a database-first DEX comparison platform covering **500 DEXs across 27+ chains** in four phases. Phase 1 establishes data infrastructure (DefiLlama sync to PostgreSQL). Phase 2 builds the homepage rankings, basic DEX pages with real-time metrics, and comprehensive sitemap planning (570+ URLs). Phase 3 adds editorial content, comparison tools, chain pages, guides, and methodology transparency for SEO differentiation. Phase 4 finalizes production readiness with Core Web Vitals optimization, SEO metadata, and deployment configuration.
 
 ## Phases
 
@@ -35,7 +35,7 @@ Plans:
 - [x] 01-03-PLAN.md — Data access layer, cache fallback, API endpoints
 
 ### Phase 2: Core Pages & Rankings
-**Goal**: Users can browse DEX rankings on the homepage, filter/sort/search, and view individual DEX pages with real-time metrics.
+**Goal**: Users can browse DEX rankings on the homepage, filter/sort/search, and view individual DEX pages with real-time metrics. Comprehensive sitemap planning for 500 DEXs.
 **Depends on**: Phase 1
 **Requirements**: RANK-01, RANK-02, RANK-03, RANK-04, HOME-01, HOME-02, HOME-03, HOME-04, HOME-05, HOME-06, HOME-07, REVIEW-01, REVIEW-02, REVIEW-03, REVIEW-05
 **Success Criteria** (what must be TRUE):
@@ -44,6 +44,7 @@ Plans:
   3. User can sort by rank score, TVL, or volume
   4. User can search DEXs by name
   5. User can click a DEX to view its dedicated page with metrics and score breakdown
+  6. Sitemap planning complete for 500 DEXs across 5 tiers (570+ URLs)
 **Plans**: 3 plans in 3 waves (sequential)
 
 Plans:
@@ -56,11 +57,12 @@ Plans:
 **Depends on**: Phase 2
 **Requirements**: REVIEW-04, REVIEW-06, REVIEW-07, REVIEW-08, COMP-01, COMP-02, COMP-03, COMP-04, COMP-05, COMP-06, CHAIN-01, CHAIN-02, CHAIN-03, CHAIN-04, CHAIN-05, GUIDE-01, GUIDE-02, GUIDE-03, GUIDE-04, GUIDE-05, GUIDE-06, GUIDE-07, METH-01, METH-02, METH-03
 **Success Criteria** (what must be TRUE):
-  1. 30-40 DEX reviews include editorial "Editor's Take" with unique insights
-  2. User can compare two DEXs side-by-side at /compare/[dex-1]-vs-[dex-2]
-  3. User can browse chain-specific pages showing top DEXs per chain (10 chains)
-  4. User can read educational guides explaining DEX concepts (5+ guides)
+  1. Tier 1-2 DEX reviews (50 DEXs) include editorial "Editor's Take" with unique insights
+  2. User can compare two DEXs side-by-side at /compare/[dex-1]-vs-[dex-2] (10+ comparisons)
+  3. User can browse chain-specific pages showing top DEXs per chain (27 chains)
+  4. User can read educational guides explaining DEX concepts (16 guides)
   5. User can view "How We Rank" page explaining the ranking methodology
+  6. Category pages live for all 7 DEX types (spot, perp, aggregator, cross-chain, options, prediction, yield)
 **Plans**: TBD
 
 Plans:
@@ -71,21 +73,28 @@ Plans:
 - [ ] 03-05: Methodology page
 
 ### Phase 4: Production & Polish
-**Goal**: Production-ready site with SEO optimization, Core Web Vitals passing, and all technical requirements for search engine visibility.
+**Goal**: Production-ready site with performant 2026-style animations, SEO optimization, Core Web Vitals passing, and modern UI polish with zero-lag interactions.
 **Depends on**: Phase 3
-**Requirements**: TECH-04, TECH-05, TECH-06, TECH-07, TECH-08, TECH-09
+**Requirements**: TECH-04, TECH-05, TECH-06, TECH-07, TECH-08, TECH-09, ANIM-01, ANIM-02, ANIM-03, ANIM-04, ANIM-05, ANIM-06
 **Success Criteria** (what must be TRUE):
   1. All pages are server-side rendered or statically generated
   2. Core Web Vitals pass (LCP <2.5s, INP <200ms, CLS <0.1)
-  3. XML sitemap is generated automatically and includes all pages
+  3. XML sitemap generated dynamically includes all 570+ URLs (500 DEXs, 27 chains, categories, guides)
   4. robots.txt and canonical URLs are configured correctly
   5. Site is mobile-responsive and works across all viewport sizes
-**Plans**: TBD
+  6. Page transitions are smooth with no layout jank (View Transitions API)
+  7. Data loading shows skeleton shimmer animations
+  8. Interactive elements have micro-interaction feedback (hover, click, state changes)
+  9. All animations run at 60fps with zero lag (GPU-accelerated transform/opacity only)
+  10. Animations respect `prefers-reduced-motion` for accessibility
+**Plans**: 5 plans
 
 Plans:
-- [ ] 04-01: SSR/SSG optimization
-- [ ] 04-02: Core Web Vitals and performance
-- [ ] 04-03: SEO infrastructure (sitemap, robots, canonicals)
+- [ ] 04-01: Animation foundation (Motion library setup, GPU-accelerated patterns, reduced-motion support)
+- [ ] 04-02: Page transitions (View Transitions API, route animations, loading states)
+- [ ] 04-03: Micro-interactions (hover effects, click feedback, number counters, rank changes)
+- [ ] 04-04: Loading states (skeleton shimmer, data table animations, chart entrances)
+- [ ] 04-05: SEO infrastructure (sitemap, robots, canonicals, Core Web Vitals audit)
 
 ## Progress
 
@@ -97,7 +106,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
 | 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
 | 3. Content & Differentiation | 0/5 | Not started | - |
-| 4. Production & Polish | 0/3 | Not started | - |
+| 4. Production & Polish | 0/5 | Not started | - |
 
 ---
 
@@ -143,5 +152,7 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Phase 1 planned: 2026-01-17*
 *Phase 2 planned: 2026-01-18*
 *Phase 2 complete: 2026-01-18*
+*Sitemap expanded to 500 DEXs: 2026-01-20*
+*Animation system added to Phase 4: 2026-01-20*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*

@@ -89,6 +89,15 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **TECH-08**: Canonical URLs set for all pages
 - [ ] **TECH-09**: Mobile-first responsive design
 
+### Animation & Micro-interactions
+
+- [ ] **ANIM-01**: Page transitions use View Transitions API with smooth route animations
+- [ ] **ANIM-02**: Data loading shows skeleton shimmer animations (left-to-right gradient)
+- [ ] **ANIM-03**: Interactive elements have micro-interaction feedback (hover scale, click states)
+- [ ] **ANIM-04**: All animations use GPU-accelerated properties only (transform, opacity)
+- [ ] **ANIM-05**: Animations run at consistent 60fps with zero layout jank
+- [ ] **ANIM-06**: Animations respect `prefers-reduced-motion` accessibility setting
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -244,12 +253,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TECH-07 | Phase 4 | Pending |
 | TECH-08 | Phase 4 | Pending |
 | TECH-09 | Phase 4 | Pending |
+| ANIM-01 | Phase 4 | Pending |
+| ANIM-02 | Phase 4 | Pending |
+| ANIM-03 | Phase 4 | Pending |
+| ANIM-04 | Phase 4 | Pending |
+| ANIM-05 | Phase 4 | Pending |
+| ANIM-06 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 50 total
-- Mapped to phases: 50
+- v1 requirements: 56 total
+- Mapped to phases: 56
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 2 completion*
+*Last updated: 2026-01-20 after adding Animation requirements*
