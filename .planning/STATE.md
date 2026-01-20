@@ -64,6 +64,8 @@ Recent decisions affecting current work:
 | 03-01 | JSON-LD types | schema-dts | Official Schema.org TypeScript definitions |
 | 03-04 | Static generation | generateStaticParams | Pre-generate 259 chain pages for instant load |
 | 03-04 | ISR revalidation | 1 hour | Balance fresh metrics with build performance |
+| 03-02 | Editorial content focus | Top 50 derivatives by TVL | Database has TVL data for derivatives, not spot DEXs |
+| 03-02 | Content tiering | 10 Tier 1 + 40 Tier 2 | Match protocol significance to content depth |
 
 ### Pending Todos
 
@@ -134,5 +136,5 @@ All Phase 2 success criteria verified:
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 03-04-PLAN.md
+Stopped at: Completed 03-02-PLAN.md Task 4 (Tier 2 editorial content)
 Resume file: None
