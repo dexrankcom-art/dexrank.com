@@ -62,9 +62,30 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-2 todo(s) in `.planning/todos/pending/`:
-- **Prevent AI slop in generated content** (content) - Strategy for Phase 3 content quality
-- **Add last updated date to articles** (ui) - SEO freshness signal and user trust
+13 todo(s) in `.planning/todos/pending/`:
+
+**Content (4):**
+- Prevent AI slop in generated content
+- Define content review checklist before publish
+- Create style guide for editorial voice
+- Create content update SOP document
+
+**SEO (2):**
+- Add JSON-LD structured data to DEX pages
+- Add canonical URLs for duplicate content
+
+**UI (5):**
+- Add last updated date to articles
+- Implement breadcrumb navigation
+- Create 404 page with helpful navigation
+- Add methodology link in ranking table header
+- Show data refresh timestamp on homepage
+
+**Content/Legal (1):**
+- Add disclaimer for affiliate links
+
+**Tooling (1):**
+- Set up error monitoring (Sentry)
 
 ### Blockers/Concerns
 
