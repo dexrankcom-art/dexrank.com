@@ -78,14 +78,14 @@ Plans:
 ### Phase 4: Production & Polish
 **Goal**: Production-ready site with performant 2026-style animations, SEO optimization, Core Web Vitals passing, and modern UI polish with zero-lag interactions.
 **Depends on**: Phase 3
-**Requirements**: TECH-04, TECH-05, TECH-06, TECH-07, TECH-08, TECH-09, ANIM-01, ANIM-02, ANIM-03, ANIM-04, ANIM-05, ANIM-06
+**Requirements**: TECH-04, TECH-05, TECH-06, TECH-07, TECH-08, TECH-09, ANIM-01, ANIM-02, ANIM-03, ANIM-04, ANIM-05, ANIM-06, DARK-01, DARK-02, DARK-03, SOCIAL-01, SOCIAL-02, SOCIAL-03, NEWS-01
 **Success Criteria** (what must be TRUE):
   1. All pages are server-side rendered or statically generated
   2. Core Web Vitals pass (LCP <2.5s, INP <200ms, CLS <0.1)
   3. XML sitemap generated dynamically includes all 570+ URLs (500 DEXs, 27 chains, categories, guides)
   4. robots.txt and canonical URLs are configured correctly
   5. Site is mobile-responsive and works across all viewport sizes
-  6. Page transitions are smooth with no layout jank (View Transitions API)
+  6. Page transitions are smooth with no layout jank (CSS fade transitions)
   7. Data loading shows skeleton shimmer animations
   8. Interactive elements have micro-interaction feedback (hover, click, state changes)
   9. All animations run at 60fps with zero lag (GPU-accelerated transform/opacity only)
@@ -93,16 +93,16 @@ Plans:
   11. Dark mode toggle with system preference detection
   12. OG images and Twitter cards generated for social sharing
   13. Newsletter signup captures emails for launch announcements
-**Plans**: 7 plans
+**Plans**: 7 plans in 3 waves
 
 Plans:
-- [ ] 04-01: Animation foundation (Motion library setup, GPU-accelerated patterns, reduced-motion support)
-- [ ] 04-02: Page transitions (View Transitions API, route animations, loading states)
-- [ ] 04-03: Micro-interactions (hover effects, click feedback, number counters, rank changes)
-- [ ] 04-04: Loading states (skeleton shimmer, data table animations, chart entrances)
-- [ ] 04-05: Dark mode (theme toggle, system preference, persistent selection)
-- [ ] 04-06: Social sharing (OG images, Twitter cards, dynamic meta images)
-- [ ] 04-07: SEO infrastructure (sitemap, robots, canonicals, newsletter signup, Core Web Vitals audit)
+- [ ] 04-01-PLAN.md — Animation foundation (CSS keyframes, GPU-accelerated patterns, reduced-motion support) (Wave 1)
+- [ ] 04-02-PLAN.md — Page transitions (CSS fade, template.tsx, loading states) (Wave 2)
+- [ ] 04-03-PLAN.md — Micro-interactions (hover effects, click feedback, count-up numbers) (Wave 2)
+- [ ] 04-04-PLAN.md — Loading states (skeleton shimmer, staggered table rows) (Wave 2)
+- [ ] 04-05-PLAN.md — Dark mode (next-themes, toggle, system preference) (Wave 1)
+- [ ] 04-06-PLAN.md — Social sharing (OG images, Twitter cards, dynamic meta images) (Wave 3)
+- [ ] 04-07-PLAN.md — SEO infrastructure (sitemap, robots, newsletter signup) (Wave 1)
 
 ### Phase 5: Data Enhancements
 **Goal**: Richer data visualization with historical trends and security transparency that builds user trust and engagement.
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
 | 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
 | 3. Content & Differentiation | 7/7 | Complete | 2026-01-20 |
-| 4. Production & Polish | 0/7 | Not started | - |
+| 4. Production & Polish | 0/7 | Planned | - |
 | 5. Data Enhancements | 0/3 | Not started | - |
 
 ---
@@ -185,5 +185,6 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Phase 5 added (data enhancements): 2026-01-20*
 *Phase 3 planned: 2026-01-20*
 *Phase 3 complete: 2026-01-20*
+*Phase 4 planned: 2026-01-20*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*
