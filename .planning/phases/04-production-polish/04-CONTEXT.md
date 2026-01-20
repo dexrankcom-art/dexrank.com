@@ -1,12 +1,12 @@
 # Phase 4: Production & Polish - Context
 
-**Gathered:** 2026-01-20
+**Gathered:** 2026-01-20 (updated)
 **Status:** Ready for planning
 
 <domain>
 ## Phase Boundary
 
-Production-ready site with performant animations, dark mode, SEO infrastructure, social sharing, and newsletter signup. Establishes brand identity through the UI, ensures Core Web Vitals compliance, and adds polish that differentiates from data-only competitors.
+Production-ready site with performant animations, dark mode, SEO infrastructure, social sharing, and newsletter signup. The current site already has a dark theme with cyan/purple accents, Outfit font, and glassmorphism styling — this phase polishes and enhances rather than redesigns.
 
 </domain>
 
@@ -18,6 +18,11 @@ Production-ready site with performant animations, dark mode, SEO infrastructure,
 - No crypto clichés (neon gradients, rocket emojis, "to the moon" energy)
 - Authority through clarity — data speaks, UI doesn't shout
 - Professional for serious traders, approachable for newcomers
+
+### Typography
+- Current site uses Outfit for headings — evaluate keeping vs switching to Cal Sans (Claude's discretion)
+- Body text: Inter with tabular figures for number alignment in tables
+- Numbers/metrics: Tabular figures for clean column alignment in rankings
 
 ### Color Palette (derived from logo)
 - Primary: Deep purple `oklch(0.45 0.25 290)` — matches logo background
@@ -48,12 +53,14 @@ Production-ready site with performant animations, dark mode, SEO infrastructure,
 
 ### Dark Mode
 - Approach: "Elevated dark" — not pure inversion
-- Background: Purple-tinted dark `oklch(0.12 0.03 290)` — matches logo
+- Background: Cool/blue-gray palette — fits current cyan/purple accent scheme
 - Cards: Slightly lighter for depth hierarchy
 - Text: Off-white, not pure white (easier on eyes)
 - Borders: Subtle, 10-15% opacity white
 - Implementation: next-themes library
-- Default: System preference on first visit, persistent toggle after
+- Default: System preference on first visit — respects OS dark/light setting automatically
+- Toggle: Header/navbar — always visible, easy to find
+- Logo handling: Protocol/chain logos get white background pills in dark mode for visibility
 
 ### Data Presentation
 - Tables: Clean rows, generous padding, zebra striping only in dark mode
@@ -93,6 +100,8 @@ Production-ready site with performant animations, dark mode, SEO infrastructure,
 - "DeFiLlama meets Linear" — clean data presentation with subtle polish
 - Purple is distinctive in crypto/finance (most competitors use blue)
 - Green accent does double duty: brand color AND positive metrics
+- Current site reference: https://dexrank.vercel.app/
+- "I kind of like this setup" — preserve existing dark theme with cyan/purple gradients, glassmorphism cards, glow effects, pulsing live indicators, staggered fade-in animations
 
 </specifics>
 
