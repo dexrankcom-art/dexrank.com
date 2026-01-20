@@ -98,6 +98,33 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ANIM-05**: Animations run at consistent 60fps with zero layout jank
 - [ ] **ANIM-06**: Animations respect `prefers-reduced-motion` accessibility setting
 
+### Dark Mode & Theming
+
+- [ ] **DARK-01**: User can toggle between light and dark mode
+- [ ] **DARK-02**: Theme respects system preference on first visit
+- [ ] **DARK-03**: Theme preference persists across sessions (localStorage)
+
+### Social Sharing & Newsletter
+
+- [ ] **SOCIAL-01**: All pages have Open Graph meta tags for social sharing
+- [ ] **SOCIAL-02**: Twitter/X cards display rich previews with images
+- [ ] **SOCIAL-03**: Dynamic OG images generated for DEX pages showing key metrics
+- [ ] **NEWS-01**: Newsletter signup form captures email for launch announcements
+
+### Historical Data & Charts
+
+- [ ] **CHART-01**: DEX pages display 30/60/90 day TVL trend charts
+- [ ] **CHART-02**: DEX pages display 30/60/90 day volume trend charts
+- [ ] **CHART-03**: Charts are interactive (hover tooltips, responsive)
+- [ ] **DATA-07**: Historical TVL/volume data syncs daily from DefiLlama
+
+### Security Indicators
+
+- [ ] **SEC-01**: DEX pages show audit status with links to audit reports
+- [ ] **SEC-02**: DEX pages display hack/exploit history (dates, amounts, resolution)
+- [ ] **SEC-03**: Security score calculated from audits and incident history
+- [ ] **DATA-09**: Security data integrated into DexRank scoring algorithm
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -111,9 +138,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Data Enhancements
 
-- **DATA-07**: Historical TVL/volume charts (30/60/90 day trends)
 - **DATA-08**: Fee/revenue data per DEX
-- **DATA-09**: Security score based on audits and incident history
 - **DATA-10**: User growth metrics
 
 ### Content Expansion
@@ -259,12 +284,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANIM-04 | Phase 4 | Pending |
 | ANIM-05 | Phase 4 | Pending |
 | ANIM-06 | Phase 4 | Pending |
+| DARK-01 | Phase 4 | Pending |
+| DARK-02 | Phase 4 | Pending |
+| DARK-03 | Phase 4 | Pending |
+| SOCIAL-01 | Phase 4 | Pending |
+| SOCIAL-02 | Phase 4 | Pending |
+| SOCIAL-03 | Phase 4 | Pending |
+| NEWS-01 | Phase 4 | Pending |
+| CHART-01 | Phase 5 | Pending |
+| CHART-02 | Phase 5 | Pending |
+| CHART-03 | Phase 5 | Pending |
+| DATA-07 | Phase 5 | Pending |
+| SEC-01 | Phase 5 | Pending |
+| SEC-02 | Phase 5 | Pending |
+| SEC-03 | Phase 5 | Pending |
+| DATA-09 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 56 total
-- Mapped to phases: 56
+- v1 requirements: 72 total
+- Mapped to phases: 72
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-20 after adding Animation requirements*
+*Last updated: 2026-01-20 after adding dark mode, social sharing, charts, security indicators*

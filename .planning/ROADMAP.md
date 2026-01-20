@@ -2,7 +2,7 @@
 
 ## Overview
 
-DexRank v1.0 delivers a database-first DEX comparison platform covering **500 DEXs across 27+ chains** in four phases. Phase 1 establishes data infrastructure (DefiLlama sync to PostgreSQL). Phase 2 builds the homepage rankings, basic DEX pages with real-time metrics, and comprehensive sitemap planning (570+ URLs). Phase 3 adds editorial content, comparison tools, chain pages, guides, and methodology transparency for SEO differentiation. Phase 4 finalizes production readiness with Core Web Vitals optimization, SEO metadata, and deployment configuration.
+DexRank v1.0 delivers a database-first DEX comparison platform covering **500 DEXs across 27+ chains** in five phases. Phase 1 establishes data infrastructure (DefiLlama sync to PostgreSQL). Phase 2 builds the homepage rankings, basic DEX pages with real-time metrics, and comprehensive sitemap planning (570+ URLs). Phase 3 adds editorial content, comparison tools, chain pages, guides, and methodology transparency for SEO differentiation. Phase 4 delivers modern 2026 UI polish with performant animations, dark mode, social sharing, and newsletter signup. Phase 5 enhances data depth with historical TVL/volume charts and security indicators.
 
 ## Phases
 
@@ -13,7 +13,8 @@ DexRank v1.0 delivers a database-first DEX comparison platform covering **500 DE
 - [x] **Phase 1: Data Foundation** - Database schema, DefiLlama sync, data reliability
 - [x] **Phase 2: Core Pages & Rankings** - Homepage, ranking algorithm, basic DEX pages
 - [ ] **Phase 3: Content & Differentiation** - Editorial reviews, comparisons, chain pages, guides, methodology
-- [ ] **Phase 4: Production & Polish** - SEO optimization, Core Web Vitals, deployment readiness
+- [ ] **Phase 4: Production & Polish** - Animations, dark mode, SEO, social sharing, newsletter
+- [ ] **Phase 5: Data Enhancements** - Historical charts, security indicators, trust signals
 
 ## Phase Details
 
@@ -87,38 +88,63 @@ Plans:
   8. Interactive elements have micro-interaction feedback (hover, click, state changes)
   9. All animations run at 60fps with zero lag (GPU-accelerated transform/opacity only)
   10. Animations respect `prefers-reduced-motion` for accessibility
-**Plans**: 5 plans
+  11. Dark mode toggle with system preference detection
+  12. OG images and Twitter cards generated for social sharing
+  13. Newsletter signup captures emails for launch announcements
+**Plans**: 7 plans
 
 Plans:
 - [ ] 04-01: Animation foundation (Motion library setup, GPU-accelerated patterns, reduced-motion support)
 - [ ] 04-02: Page transitions (View Transitions API, route animations, loading states)
 - [ ] 04-03: Micro-interactions (hover effects, click feedback, number counters, rank changes)
 - [ ] 04-04: Loading states (skeleton shimmer, data table animations, chart entrances)
-- [ ] 04-05: SEO infrastructure (sitemap, robots, canonicals, Core Web Vitals audit)
+- [ ] 04-05: Dark mode (theme toggle, system preference, persistent selection)
+- [ ] 04-06: Social sharing (OG images, Twitter cards, dynamic meta images)
+- [ ] 04-07: SEO infrastructure (sitemap, robots, canonicals, newsletter signup, Core Web Vitals audit)
+
+### Phase 5: Data Enhancements
+**Goal**: Richer data visualization with historical trends and security transparency that builds user trust and engagement.
+**Depends on**: Phase 4
+**Requirements**: DATA-07, DATA-09, CHART-01, CHART-02, CHART-03, SEC-01, SEC-02, SEC-03
+**Success Criteria** (what must be TRUE):
+  1. User can view 30/60/90 day TVL and volume charts on DEX pages
+  2. Charts animate smoothly on load with staggered entrance
+  3. Security section shows audit status with links to audit reports
+  4. Security section displays hack/exploit history (if any) with dates and amounts
+  5. Security score contributes to overall DexRank calculation
+  6. Historical data syncs from DefiLlama on daily schedule
+**Plans**: 3 plans
+
+Plans:
+- [ ] 05-01: Historical data sync (DefiLlama historical endpoints, daily cron, data schema)
+- [ ] 05-02: Interactive charts (TVL/volume trends, responsive, animated)
+- [ ] 05-03: Security indicators (audit status, hack history, security score integration)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Data Foundation | 3/3 | Complete | 2026-01-18 |
 | 2. Core Pages & Rankings | 3/3 | Complete | 2026-01-18 |
 | 3. Content & Differentiation | 0/5 | Not started | - |
-| 4. Production & Polish | 0/5 | Not started | - |
+| 4. Production & Polish | 0/7 | Not started | - |
+| 5. Data Enhancements | 0/3 | Not started | - |
 
 ---
 
 ## Future Vision: v2 and Beyond
 
-### v2 Milestone: Monetization & Data Depth
+### v2 Milestone: Monetization & Engagement
 
-After v1.0 launch, focus on sustainable revenue and richer data:
+After v1.0 launch, focus on sustainable revenue and user engagement:
 - Affiliate link integration with click tracking
-- Historical TVL/volume charts (30/60/90 day trends)
 - Fee/revenue data per DEX
 - Category rankings (best for stablecoins, perps, memecoins)
+- Fees calculator ("What would X trade cost?")
+- User growth metrics integration
 
 ### v3 Milestone: Verified User Reviews (END GOAL)
 
@@ -154,5 +180,6 @@ See: REQUIREMENTS.md → v3 Vision: Verified User Reviews
 *Phase 2 complete: 2026-01-18*
 *Sitemap expanded to 500 DEXs: 2026-01-20*
 *Animation system added to Phase 4: 2026-01-20*
+*Phase 5 added (data enhancements): 2026-01-20*
 *Milestone: v1.0*
 *Future vision added: 2026-01-18*
