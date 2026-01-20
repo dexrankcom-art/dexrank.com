@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RankBadge } from './rank-badge';
 import type { RankedProtocol } from '@/lib/data/types';
@@ -65,14 +65,20 @@ export const columns: ColumnDef<RankedProtocol>[] = [
   {
     accessorKey: 'dexRankScore',
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="-ml-4"
-      >
-        DexRank
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="-ml-4"
+        >
+          DexRank
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+        <Link href="/how-we-rank" className="text-muted-foreground hover:text-primary">
+          <Info className="h-4 w-4" />
+          <span className="sr-only">How we calculate scores</span>
+        </Link>
+      </div>
     ),
     cell: ({ row }) => <RankBadge score={row.original.dexRankScore} />,
   },

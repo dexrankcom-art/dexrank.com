@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { getProtocolsWithRanking, getCategories, getChainNames, getProtocolCount } from '@/lib/data/protocols';
 import { DataTable } from '@/components/rankings/data-table';
 import { TableToolbar } from '@/components/rankings/table-toolbar';
@@ -59,7 +60,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">DEX Rankings</h1>
         <p className="text-muted-foreground mt-2">
-          Compare decentralized exchanges by DexRank score, TVL, and trading volume.
+          Compare decentralized exchanges by DexRank score, TVL, and trading volume.{' '}
+          <Link href="/how-we-rank" className="text-primary hover:underline">
+            Learn how we rank
+          </Link>
         </p>
       </div>
 

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { ScoreBreakdown } from '@/lib/data/types';
 
@@ -68,6 +69,11 @@ export function ScoreBreakdown({ breakdown }: ScoreBreakdownProps) {
           {breakdown.weights.volume === 0
             ? 'Score based on TVL only (volume data unavailable)'
             : `Score calculated using ${(breakdown.weights.tvl * 100).toFixed(0)}% TVL + ${(breakdown.weights.volume * 100).toFixed(0)}% volume`}
+        </p>
+        <p className="text-sm mt-4">
+          <Link href="/how-we-rank" className="text-primary hover:underline">
+            How we calculate scores
+          </Link>
         </p>
       </div>
     </div>
