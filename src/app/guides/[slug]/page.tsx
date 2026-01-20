@@ -51,8 +51,14 @@ export default async function GuidePage({
     notFound();
   }
 
-  // Dynamic import of MDX content
-  const { default: MDXContent } = await import(`@/content/guides/${slug}.mdx`);
+  // MDX content would be loaded here - for now return the raw content
+  // Dynamic MDX imports require content files to exist at build time
+  const MDXContent = () => (
+    <div
+      className="prose prose-slate dark:prose-invert max-w-none"
+      dangerouslySetInnerHTML={{ __html: guide.content.replace(/\n/g, '<br/>') }}
+    />
+  );
 
   const jsonLd = generateGuideSchema({
     title: guide.frontmatter.title,
@@ -106,9 +112,7 @@ export default async function GuidePage({
           </p>
         </header>
 
-        <div className="prose prose-slate dark:prose-invert max-w-none">
-          <MDXContent />
-        </div>
+        <MDXContent />
       </article>
     </main>
   );
