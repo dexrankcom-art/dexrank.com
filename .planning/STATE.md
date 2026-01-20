@@ -62,8 +62,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-1 todo(s) in `.planning/todos/pending/`:
+2 todo(s) in `.planning/todos/pending/`:
 - **Prevent AI slop in generated content** (content) - Strategy for Phase 3 content quality
+- **Add last updated date to articles** (ui) - SEO freshness signal and user trust
 
 ### Blockers/Concerns
 
