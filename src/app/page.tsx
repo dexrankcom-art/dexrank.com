@@ -6,6 +6,7 @@ import { TableToolbar } from '@/components/rankings/table-toolbar';
 import { columns } from '@/components/rankings/columns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { NewsletterForm } from '@/components/newsletter-form';
 import type { SortOrder, ProtocolSortField } from '@/lib/data/types';
 
 // Revalidate every 5 minutes for fresh data
@@ -117,6 +118,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           )}
         </div>
       </Suspense>
+
+      {/* Newsletter signup */}
+      <section className="border-t border-border py-12 mt-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-xl font-semibold mb-2">Stay Updated</h2>
+          <p className="text-muted-foreground mb-4">
+            Get notified when we launch new features and DEX rankings.
+          </p>
+          <div className="flex justify-center">
+            <NewsletterForm />
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
