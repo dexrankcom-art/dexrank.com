@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { getProtocolsWithRanking, getCategories, getChainNames, getProtocolCount } from '@/lib/data/protocols';
+import { getLastSyncTime, formatRelativeTime } from '@/lib/data/metrics';
 import { DataTable } from '@/components/rankings/data-table';
 import { TableToolbar } from '@/components/rankings/table-toolbar';
 import { columns } from '@/components/rankings/columns';
@@ -38,7 +39,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const pageSize = 50;
 
   // Fetch data in parallel
-  const [protocols, categories, chains, totalCount] = await Promise.all([
+  const [protocols, categories, chains, totalCount, lastSyncTime] = await Promise.all([
     getProtocolsWithRanking(
       {
         search,
@@ -53,6 +54,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     getCategories(),
     getChainNames(),
     getProtocolCount({ search, chain, category }),
+    getLastSyncTime(),
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -68,6 +70,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               Learn how we rank
             </Link>
           </p>
+          {lastSyncTime && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Data updated: {formatRelativeTime(lastSyncTime)}
+            </p>
+          )}
         </div>
         <ThemeToggle />
       </div>
