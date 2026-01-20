@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 4 of 5 (Production & Polish)
-Plan: 1 of 7 in current phase
+Plan: 2 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-20 - Completed 04-05-PLAN.md (Dark Mode)
+Last activity: 2026-01-20 - Completed 04-07-PLAN.md (SEO Infrastructure)
 
-Progress: [███████░░░] 70% (14/20 plans)
+Progress: [████████░░] 75% (15/20 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: ~12 minutes
-- Total execution time: ~165 minutes
+- Total plans completed: 15
+- Average duration: ~11 minutes
+- Total execution time: ~168 minutes
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [███████░░░] 70% (14/20 plans)
 | 1 | 3/3 | ~64min | ~21min |
 | 2 | 3/3 | ~33min | ~11min |
 | 3 | 7/7 | ~63min | ~9min |
-| 4 | 1/7 | ~5min | ~5min |
+| 4 | 2/7 | ~8min | ~4min |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (5min), 03-05 (5min), 03-07 (7min), 03-06 (28min), 04-05 (5min)
-- Trend: Phase 4 started with dark mode implementation
+- Last 5 plans: 03-05 (5min), 03-07 (7min), 03-06 (28min), 04-05 (5min), 04-07 (3min)
+- Trend: Phase 4 progressing with dark mode and SEO infrastructure
 
 *Updated after each plan completion*
 
@@ -74,6 +74,9 @@ Recent decisions affecting current work:
 | 03-06 | Guide organization | Group by difficulty on listing | Users find content appropriate to experience level |
 | 04-05 | Theme attribute | attribute="class" for ThemeProvider | Tailwind v4 @custom-variant dark compatibility |
 | 04-05 | Hydration safety | Mount check pattern for ThemeToggle | Server doesn't know localStorage theme |
+| 04-07 | Sitemap convention | Next.js file conventions (sitemap.ts) | Automatic /sitemap.xml with ISR |
+| 04-07 | Newsletter storage | Database storage (not external service) | Simplicity, no additional service needed |
+| 04-07 | Sitemap ISR | 1 hour revalidation | Balance freshness with performance |
 
 ### Pending Todos
 
@@ -168,11 +171,11 @@ All Phase 3 success criteria verified:
 | 04-04 | Performance Optimization | PENDING |
 | 04-05 | Dark Mode | COMPLETE |
 | 04-06 | PWA Support | PENDING |
-| 04-07 | Technical SEO | IN PROGRESS |
+| 04-07 | Technical SEO | COMPLETE |
 
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 04-05-PLAN.md (Dark Mode)
+Stopped at: Completed 04-07-PLAN.md (SEO Infrastructure)
 Resume file: None
 Next action: Continue Phase 4 execution
