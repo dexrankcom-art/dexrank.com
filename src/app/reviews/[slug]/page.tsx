@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProtocolBySlugWithRanking, getAllProtocolSlugs } from '@/lib/data/protocols';
+import { getEditorialContent } from '@/lib/content/reviews';
+import { JsonLd } from '@/components/seo/json-ld';
+import { generateReviewSchema } from '@/lib/seo/schemas';
 import { ReviewHeader } from '@/components/reviews/review-header';
 import { MetricsGrid } from '@/components/reviews/metrics-grid';
 import { ScoreBreakdown } from '@/components/reviews/score-breakdown';
@@ -50,14 +53,32 @@ export default async function ReviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const protocol = await getProtocolBySlugWithRanking(slug);
+  const [protocol, editorial] = await Promise.all([
+    getProtocolBySlugWithRanking(slug),
+    getEditorialContent(slug),
+  ]);
 
   if (!protocol) {
     notFound();
   }
 
+  // Generate JSON-LD schema for SEO
+  const jsonLd = generateReviewSchema(
+    {
+      name: protocol.name,
+      logo: protocol.logo,
+      url: protocol.url,
+      description: protocol.description,
+    },
+    protocol.scoreBreakdown.overall,
+    protocol.rank,
+    protocol.totalProtocols
+  );
+
   return (
     <main className="container mx-auto py-8 px-4">
+      <JsonLd data={jsonLd} />
+
       <ReviewHeader
         protocol={protocol}
         scoreBreakdown={protocol.scoreBreakdown}
@@ -68,7 +89,7 @@ export default async function ReviewPage({
 
       <ScoreBreakdown breakdown={protocol.scoreBreakdown} />
 
-      <ReviewSections protocol={protocol} />
+      <ReviewSections protocol={protocol} editorial={editorial} />
     </main>
   );
 }

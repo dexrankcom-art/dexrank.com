@@ -1,13 +1,28 @@
 import { Badge } from '@/components/ui/badge';
 import type { ProtocolWithMetrics } from '@/lib/data/types';
+import type { EditorialContent } from '@/lib/content/reviews';
+import { EditorsTake } from './editors-take';
 
 interface ReviewSectionsProps {
   protocol: ProtocolWithMetrics;
+  editorial?: EditorialContent | null;
 }
 
-export function ReviewSections({ protocol }: ReviewSectionsProps) {
+export function ReviewSections({ protocol, editorial }: ReviewSectionsProps) {
   return (
     <div className="space-y-8">
+      {/* Editor's Take Section - renders if editorial content exists */}
+      {editorial?.editorsTake && (
+        <EditorsTake
+          content={editorial.editorsTake}
+          lastUpdated={editorial.lastUpdated}
+          bestFor={editorial.bestFor}
+          pros={editorial.pros}
+          cons={editorial.cons}
+          tier={editorial.tier}
+        />
+      )}
+
       {/* Overview Section */}
       <section>
         <h2 className="text-xl font-semibold mb-4">Overview</h2>
