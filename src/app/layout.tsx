@@ -6,14 +6,17 @@ import { Providers } from "./providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap", // Prevent FOIT - show fallback font while loading
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap", // Prevent FOIT - show fallback font while loading
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://dexrank.com'),
   title: "DexRank - DEX Rankings & Reviews",
   description: "Compare decentralized exchanges with transparent rankings based on TVL, volume, and trust metrics.",
 };

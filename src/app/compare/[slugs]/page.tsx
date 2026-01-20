@@ -49,6 +49,9 @@ export async function generateMetadata({
   return {
     title: `${dex1.name} vs ${dex2.name} - DEX Comparison | DexRank`,
     description: `Compare ${dex1.name} and ${dex2.name}: TVL, volume, fees, chains, and DexRank scores. See which DEX is better for your trading needs.`,
+    alternates: {
+      canonical: `/compare/${slugs}`,
+    },
     openGraph: {
       title: `${dex1.name} vs ${dex2.name} Comparison`,
       description: `Side-by-side comparison of ${dex1.name} (score: ${dex1.scoreBreakdown.overall.toFixed(0)}) and ${dex2.name} (score: ${dex2.scoreBreakdown.overall.toFixed(0)}).`,

@@ -40,6 +40,9 @@ export async function generateMetadata({
   return {
     title: `${protocol.name} Review - DexRank`,
     description: `${protocol.name} DEX review with DexRank score (${protocol.scoreBreakdown.overall.toFixed(1)}/100), TVL, volume, and detailed analysis.`,
+    alternates: {
+      canonical: `/reviews/${slug}`,
+    },
     openGraph: {
       title: `${protocol.name} Review - DexRank`,
       description: `DexRank score: ${protocol.scoreBreakdown.overall.toFixed(1)}/100. Rank #${protocol.rank} of ${protocol.totalProtocols} protocols.`,

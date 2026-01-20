@@ -38,6 +38,9 @@ export async function generateMetadata({
   return {
     title: `Best ${category.pluralName} 2026 - ${totalCount} Exchanges Ranked | DexRank`,
     description: `Compare the top ${totalCount} ${category.pluralName.toLowerCase()}. ${category.description} Find the best ${category.name.toLowerCase()} for your needs.`,
+    alternates: {
+      canonical: `/categories/${slug}`,
+    },
     openGraph: {
       title: `Best ${category.pluralName} 2026`,
       description: `Top ${totalCount} ${category.pluralName.toLowerCase()} ranked by TVL and volume.`,

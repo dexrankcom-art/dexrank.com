@@ -30,6 +30,9 @@ export async function generateMetadata({
   return {
     title: `${guide.frontmatter.title} | DexRank Guides`,
     description: guide.frontmatter.description,
+    alternates: {
+      canonical: `/guides/${slug}`,
+    },
     openGraph: {
       title: guide.frontmatter.title,
       description: guide.frontmatter.description,

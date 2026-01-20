@@ -34,6 +34,9 @@ export async function generateMetadata({
   return {
     title: `Best DEXs on ${chain.name} - ${totalCount} Exchanges Ranked | DexRank`,
     description: `Compare the top ${totalCount} decentralized exchanges on ${chain.name}. Find the best DEX for trading on ${chain.name} by TVL, volume, and features.`,
+    alternates: {
+      canonical: `/chains/${slug}`,
+    },
     openGraph: {
       title: `Best DEXs on ${chain.name}`,
       description: `Top ${totalCount} DEXs ranked for ${chain.name} blockchain.`,
